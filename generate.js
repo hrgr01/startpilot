@@ -1,0 +1,1 @@
+// API-endpoint för GPT-4 affärsidé
