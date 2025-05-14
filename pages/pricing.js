@@ -6,4 +6,3 @@ export default function Pricing() {
     </div>
   );
 }
-/ Paketsida med fyra nivåer och jämförelsetabell
