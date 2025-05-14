@@ -9,25 +9,25 @@ export default function Pricing() {
             price: "Gratis",
             features: ["1 AI-idé", "Demo pitch", "Inga annonser"],
             cta: "Börja gratis",
-          },
+            link:https://buy.stripe.com/5kA005eGdffZfXGeUU          },
           {
             name: "Pro",
             price: "299 kr/mån",
             features: ["AI-idé + pitch", "1 pitchdeck", "Mailflöde"],
             cta: "Välj Pro",
-          },
+            link:https://buy.stripe.com/14k6otgOl9VFbHqfZ0           },
           {
             name: "Creator",
             price: "499 kr/mån",
             features: ["+ annonser", "TikTok copy", "Videoidéer"],
             cta: "Välj Creator",
-          },
+              link:https://buy.stripe.com/5kAfZ38hPebVh1K3cf           },
           {
             name: "Enterprise",
             price: "Från 999 kr",
             features: ["White-label", "Anpassad lösning", "Coach ingår"],
             cta: "Kontakta oss",
-          },
+              link:https://buy.stripe.com/9AQ5kp2XvebV12MaEI          },
         ].map((pkg) => (
           <div key={pkg.name} className="border rounded-xl p-6 shadow-sm hover:shadow-md">
             <h2 className="text-xl font-bold mb-2">{pkg.name}</h2>
