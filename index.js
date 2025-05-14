@@ -1,1 +1,0 @@
-// Hero + formulär (visuell startsida)
