@@ -1,7 +1,0 @@
-services:
-  - type: web
-    name: startpilot
-    env: node
-    buildCommand: npm install && npm run build
-    startCommand: npm start
-    plan: free
