@@ -6,6 +6,7 @@ export default function Form() {
   const [refBy, setRefBy] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [aiResponse, setAiResponse] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const ref = localStorage.getItem("ref");
@@ -14,12 +15,14 @@ export default function Form() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     await supabase.from("orders").insert([{ idea, refBy }]);
 
     const pitch = await generatePitch(idea);
     setAiResponse(pitch);
     setSubmitted(true);
+    setLoading(false);
   };
 
   const generatePitch = async (userIdea) => {
@@ -41,7 +44,7 @@ export default function Form() {
       <div className="p-8 max-w-xl mx-auto text-center">
         <h2 className="text-2xl font-bold mb-4">✅ Idén är inskickad!</h2>
         <p className="mb-4">Här är vad AI:n genererade utifrån din idé:</p>
-        <div className="bg-gray-100 p-4 rounded text-left">
+        <div className="bg-gray-100 p-4 rounded text-left whitespace-pre-line">
           <p>{aiResponse}</p>
         </div>
       </div>
@@ -64,8 +67,9 @@ export default function Form() {
       <button
         type="submit"
         className="bg-black text-white px-6 py-2 rounded hover:bg-gray-900"
+        disabled={loading}
       >
-        Skicka in
+        {loading ? "Genererar pitch..." : "Skicka in"}
       </button>
     </form>
   );
