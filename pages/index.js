@@ -1,41 +1,58 @@
-import { useState } from 'react';
+import { motion } from "framer-motion";
+import { useInView } from "react-intersection-observer";
 
-export default function Home() {
-  const [input, setInput] = useState({ name: '', interest: '', audience: '', experience: '' });
-  const [result, setResult] = useState(null);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const res = await fetch('/api/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(input),
-    });
-    const data = await res.json();
-    setResult(data);
-  };
+const Section = ({ children }) => {
+  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.2 });
 
   return (
-    <div className="p-6 max-w-2xl mx-auto text-center">
-      <h1 className="text-4xl font-bold mb-4">Startpilot 🚀</h1>
-      <p className="mb-6 text-lg">Få en AI-genererad affärsidé & pitch på 30 sekunder</p>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input className="border p-2 w-full" placeholder="Ditt namn" onChange={e => setInput({ ...input, name: e.target.value })} />
-        <input className="border p-2 w-full" placeholder="Vad är du intresserad av?" onChange={e => setInput({ ...input, interest: e.target.value })} />
-        <input className="border p-2 w-full" placeholder="Målgrupp?" onChange={e => setInput({ ...input, audience: e.target.value })} />
-        <input className="border p-2 w-full" placeholder="Erfarenhet (kort)" onChange={e => setInput({ ...input, experience: e.target.value })} />
-        <button className="bg-black text-white px-4 py-2 rounded" type="submit">Generera idé</button>
-      </form>
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 50 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className="my-16"
+    >
+      {children}
+    </motion.div>
+  );
+};
 
-      {result && (
-        <div className="mt-8 text-left">
-          <h2 className="text-2xl font-bold mb-2">Din affärsidé:</h2>
-          <p><strong>Idé:</strong> {result.idea}</p>
-          <p><strong>Produkt:</strong> {result.product}</p>
-          <p><strong>Pitch:</strong> {result.pitch}</p>
-          <p><strong>Annonsidéer:</strong> {result.ads}</p>
-        </div>
-      )}
+export default function Home() {
+  return (
+    <div className="p-6 max-w-4xl mx-auto">
+      <Section>
+        <h1 className="text-4xl font-bold text-center mb-4">
+          🚀 Startpilot: Starta din AI-butik på 24h
+        </h1>
+        <p className="text-center text-lg text-gray-600">
+          AI-genererad affärsidé, butik, pitch, annonser och mer. Allt på autopilot.
+        </p>
+      </Section>
+
+      <Section>
+        <h2 className="text-2xl font-semibold mb-2">📦 Vad du får</h2>
+        <ul className="list-disc pl-5 space-y-2">
+          <li>AI-genererad affärsidé & produktnisch</li>
+          <li>Färdig Shopify-butik på 1 timme</li>
+          <li>Automatisk pitch deck & TikTok-annonsidéer</li>
+        </ul>
+      </Section>
+
+      <Section>
+        <h2 className="text-2xl font-semibold mb-2">🎥 AI-video (demo)</h2>
+        <video className="rounded-xl border" autoPlay muted loop controls width="100%">
+          <source src="/demo-video.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </Section>
+
+      <Section>
+        <a href="/form">
+          <button className="mt-6 w-full bg-black text-white py-3 rounded hover:bg-gray-800">
+            Starta gratis → Skicka in din idé
+          </button>
+        </a>
+      </Section>
     </div>
   );
 }
