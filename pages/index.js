@@ -1,58 +1,69 @@
+// /pages/index.js
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { useInView } from "react-intersection-observer";
-
-const Section = ({ children }) => {
-  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.2 });
-
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 50 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      className="my-16"
-    >
-      {children}
-    </motion.div>
-  );
-};
+import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <Section>
-        <h1 className="text-4xl font-bold text-center mb-4">
-          🚀 Startpilot: Starta din AI-butik på 24h
-        </h1>
-        <p className="text-center text-lg text-gray-600">
-          AI-genererad affärsidé, butik, pitch, annonser och mer. Allt på autopilot.
-        </p>
-      </Section>
+    <main className="min-h-screen bg-black text-white font-sans">
+      <section className="text-center py-24 px-6">
+        <motion.h1
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-6xl font-bold mb-6"
+        >
+          Skapa ditt AI-drivna företag på 24 timmar
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.6 }}
+          className="text-lg text-gray-300 max-w-xl mx-auto"
+        >
+          Startpilot analyserar din idé, bygger en affärsmodell, skapar pitchdeck, video och marknadsföring – automatiskt.
+        </motion.p>
+        <div className="mt-10 flex justify-center gap-6">
+          <Link href="/form">
+            <button className="bg-white text-black px-6 py-3 rounded-md font-medium hover:scale-105 transition">
+              Starta gratis
+            </button>
+          </Link>
+          <Link href="/pricing">
+            <button className="border border-white text-white px-6 py-3 rounded-md font-medium hover:bg-white hover:text-black transition">
+              Se paket
+            </button>
+          </Link>
+        </div>
+      </section>
 
-      <Section>
-        <h2 className="text-2xl font-semibold mb-2">📦 Vad du får</h2>
-        <ul className="list-disc pl-5 space-y-2">
-          <li>AI-genererad affärsidé & produktnisch</li>
-          <li>Färdig Shopify-butik på 1 timme</li>
-          <li>Automatisk pitch deck & TikTok-annonsidéer</li>
-        </ul>
-      </Section>
+      <section className="bg-gray-900 py-20 px-6">
+        <h2 className="text-3xl font-semibold text-center mb-10">Vad AI:n gör åt dig</h2>
+        <div className="grid md:grid-cols-4 gap-8 max-w-6xl mx-auto">
+          {[
+            ["📦", "Bygger butik"],
+            ["🧠", "Skapar affärsidé"],
+            ["📽️", "Genererar video"],
+            ["📊", "Skapar pitchdeck"]
+          ].map(([emoji, title]) => (
+            <div key={title} className="bg-black border border-gray-700 p-6 rounded-xl text-center">
+              <div className="text-4xl mb-4">{emoji}</div>
+              <p className="text-lg font-medium">{title}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
-      <Section>
-        <h2 className="text-2xl font-semibold mb-2">🎥 AI-video (demo)</h2>
-        <video className="rounded-xl border" autoPlay muted loop controls width="100%">
-          <source src="/demo-video.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
-      </Section>
+      <section className="py-20 px-6">
+        <h2 className="text-3xl font-semibold text-center mb-10">Exempel på vad du får</h2>
+        <div className="flex justify-center">
+          <Image src="/demo.png" alt="AI pitch demo" width={700} height={400} className="rounded-xl shadow-lg" />
+        </div>
+      </section>
 
-      <Section>
-        <a href="/form">
-          <button className="mt-6 w-full bg-black text-white py-3 rounded hover:bg-gray-800">
-            Starta gratis → Skicka in din idé
-          </button>
-        </a>
-      </Section>
-    </div>
+      <footer className="text-center py-10 text-sm text-gray-500">
+        &copy; {new Date().getFullYear()} Startpilot. info@startpilot.org
+      </footer>
+    </main>
   );
 }
