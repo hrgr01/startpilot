@@ -1,29 +1,42 @@
+// /pages/api/generate.js
+import { OpenAI } from "openai";
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
 export default async function handler(req, res) {
-  const { prompt } = req.body;
+  if (req.method !== "POST") return res.status(405).end();
+
+  const { idea } = req.body;
+
+  const prompt = `Du är en AI-baserad startupcoach. Kunden skrev: "${idea}".
+Generera följande:
+1. Affärsidé
+2. Företagsnamn
+3. Tagline
+4. Målgrupp
+5. Produktbeskrivning
+6. FAQ (3 frågor)
+7. Call-to-action
+8. E-postämnesrad
+9. 3 Facebook-annonser (hook + värde + CTA)
+10. En kort videobeskrivning
+11. Text till pitchdeck
+12. Förslag på produkt att sälja + dropshippingmodell
+Svar som JSON. Inkludera alla fält exakt.`;
 
   try {
-    const completion = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: "gpt-4",
-        messages: [
-          { role: "system", content: "Du är en pitch-coach som hjälper entreprenörer att formulera slagkraftiga AI-idéer." },
-          { role: "user", content: `Ge mig en affärspitch baserad på denna idé: ${prompt}` }
-        ],
-        temperature: 0.7
-      })
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4",
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.8
     });
 
-    const data = await completion.json();
-    const output = data.choices?.[0]?.message?.content || "Inget svar från AI:n.";
+    const output = completion.choices[0].message.content;
+    const parsed = JSON.parse(output);
 
-    res.status(200).json({ result: output });
+    res.status(200).json(parsed);
   } catch (error) {
-    console.error("GPT-4 Error:", error);
-    res.status(500).json({ result: "Fel vid AI-generering." });
+    console.error("GPT error:", error);
+    res.status(500).json({ error: "Kunde inte generera affärspaket." });
   }
 }
