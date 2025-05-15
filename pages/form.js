@@ -46,3 +46,17 @@ export default function Form() {
         className="border p-3 w-full rounded mb-4"
         rows={4}
         placeholder="Ex: En AI som hjälper småföretagare med TikTok-annonser..."
+        value={idea}
+        onChange={(e) => setIdea(e.target.value)}
+        required
+      />
+
+      <button
+        type="submit"
+        className="bg-black text-white px-6 py-2 rounded hover:bg-gray-900"
+      >
+        Skicka in
+      </button>
+    </form>
+  );
+}
