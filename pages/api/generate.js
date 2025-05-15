@@ -1,10 +1,9 @@
 export default async function handler(req, res) {
-  const { name, interest, audience, experience } = req.body;
+  const { prompt } = req.body;
 
-  const idea = `Skapa en AI-tjänst för ${interest} riktad till ${audience}`;
-  const product = `En digital produkt som hjälper med ${interest} för ${audience}`;
-  const pitch = `${name} bygger en lösning som kombinerar ${experience} med smart teknologi`;
-  const ads = `1. Lär dig ${interest} med AI\n2. Perfekt för ${audience}\n3. Starta på 24h`;
+  // Enkel mock – här kan du koppla till riktig GPT senare
+  const idea = prompt.toLowerCase();
+  const output = `Din idé om "${idea}" kan bli en AI-tjänst som hjälper människor att lösa detta problem effektivt. Här är en möjlig pitch: En smart AI-lösning som erbjuder ${idea} på ett automatiserat, skalbart och lönsamt sätt.`;
 
-  res.status(200).json({ idea, product, pitch, ads });
+  res.status(200).json({ result: output });
 }
