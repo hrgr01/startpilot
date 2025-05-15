@@ -1,11 +1,9 @@
-export default async function handler(req, res) {
-  const { pitch } = req.body;
-
-  // Här ska du senare koppla in Pika Labs eller Runway via webhook eller API
-  const demoLink = "https://cdn.startpilot.org/demo-video.mp4";
-
+export default function handler(req, res) {
+  const pitch = req.body?.pitch || "En AI som hjälper entreprenörer";
+  const videoUrl = "https://mocked-video-host.com/startpilot/" + encodeURIComponent(pitch.toLowerCase().replace(/ /g, "-"));
   res.status(200).json({
-    message: "Video genererad baserat på din pitch",
-    videoUrl: demoLink
+    success: true,
+    videoUrl,
+    message: "Video generated successfully (mock)"
   });
 }
