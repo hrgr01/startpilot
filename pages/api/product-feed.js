@@ -1,14 +1,32 @@
-import { Configuration, OpenAIApi } from "openai";
+// /pages/api/product-feed.js
+import { OpenAI } from "openai";
 
-const config = new Configuration({ apiKey: process.env.OPENAI_API_KEY });
-const openai = new OpenAIApi(config);
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export default async function handler(req, res) {
-  const response = await openai.createCompletion({
-    model: "text-davinci-003",
-    prompt: "Ge 5 innovativa produkter med namn, kategori och beskrivning att sälja online i en lista.",
-    max_tokens: 200
-  });
-  const ideas = response.data.choices[0].text.trim();
-  res.status(200).json({ week: new Date().toISOString().split("T")[0], ideas });
+  if (req.method !== "GET") return res.status(405).end();
+
+  const prompt = `Du är en AI som varje vecka genererar 3 nya produktidéer som användare kan sälja via dropshipping. För varje produkt, inkludera:
+
+1. Produktnamn
+2. Kort beskrivning
+3. Målgrupp
+4. Säljfördelar
+5. Rekommenderad annons-hook
+
+Returnera som JSON-array.`;
+
+  try {
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4",
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.7
+    });
+
+    const ideas = JSON.parse(completion.choices[0].message.content);
+    res.status(200).json({ products: ideas });
+  } catch (err) {
+    console.error("Feed error:", err);
+    res.status(500).json({ error: "Kunde inte generera produktfeed." });
+  }
 }
