@@ -5,6 +5,7 @@ export default function Form() {
   const [idea, setIdea] = useState("");
   const [refBy, setRefBy] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [aiResponse, setAiResponse] = useState("");
 
   useEffect(() => {
     const ref = localStorage.getItem("ref");
@@ -14,26 +15,35 @@ export default function Form() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const { error } = await supabase.from("orders").insert([
-      {
-        idea,
-        refBy,
-      },
-    ]);
+    await supabase.from("orders").insert([{ idea, refBy }]);
 
-    if (error) {
-      console.error("Fel vid inskickning:", error.message);
-      alert("Något gick fel – försök igen!");
-    } else {
-      setSubmitted(true);
+    const pitch = await generatePitch(idea);
+    setAiResponse(pitch);
+    setSubmitted(true);
+  };
+
+  const generatePitch = async (userIdea) => {
+    try {
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: userIdea })
+      });
+      const data = await res.json();
+      return data.result || "Kunde inte generera pitch just nu.";
+    } catch (err) {
+      return "Fel vid AI-generering.";
     }
   };
 
   if (submitted) {
     return (
-      <div className="p-8 max-w-md mx-auto text-center">
+      <div className="p-8 max-w-xl mx-auto text-center">
         <h2 className="text-2xl font-bold mb-4">✅ Idén är inskickad!</h2>
-        <p>Tack för ditt bidrag – vi återkommer via e-post.</p>
+        <p className="mb-4">Här är vad AI:n genererade utifrån din idé:</p>
+        <div className="bg-gray-100 p-4 rounded text-left">
+          <p>{aiResponse}</p>
+        </div>
       </div>
     );
   }
