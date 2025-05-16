@@ -24,7 +24,10 @@ export default function Dashboard() {
         title: "Smarta kalendrar för ADHD-användare",
         shopifyProduct: "kalender"
       }
-    ]
+    ],
+    pitchReady: false,
+    emailReady: false,
+    adsReady: false
   });
 
   const handleCreateStore = async (product) => {
@@ -38,9 +41,25 @@ export default function Dashboard() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ idea: userData.idea })
     });
-
     const data = await res.json();
     if (data?.productLink) window.open(data.productLink, "_blank");
+  };
+
+  const handlePitchAndMarketing = async () => {
+    const res = await fetch("/api/generate-assets", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idea: userData.idea })
+    });
+    const data = await res.json();
+    if (data?.success) {
+      setUserData((prev) => ({
+        ...prev,
+        pitchReady: true,
+        emailReady: true,
+        adsReady: true
+      }));
+    }
   };
 
   return (
@@ -58,12 +77,20 @@ export default function Dashboard() {
         <div className="bg-white text-black p-6 rounded-xl mb-6">
           <h2 className="text-2xl font-bold mb-2">Din affärsidé</h2>
           <p className="text-lg">{userData.idea}</p>
-          <button
-            onClick={handleAIStoreGeneration}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            🚀 Skapa Shopify-produkt med AI
-          </button>
+          <div className="mt-4 flex flex-col gap-3">
+            <button
+              onClick={handleAIStoreGeneration}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              🚀 Skapa Shopify-produkt med AI
+            </button>
+            <button
+              onClick={handlePitchAndMarketing}
+              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            >
+              🎯 Skapa pitchdeck + annonser + e-postflöde
+            </button>
+          </div>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6 mb-6">
@@ -78,6 +105,7 @@ export default function Dashboard() {
           <div className="bg-gray-800 p-4 rounded-xl">
             <h3 className="text-xl font-semibold mb-1">📬 E-postflöde</h3>
             <p>{userData.emailFlowStatus}</p>
+            {userData.emailReady && <p className="text-green-400">✅ Klart</p>}
           </div>
         </div>
 
@@ -87,6 +115,7 @@ export default function Dashboard() {
             <a href={userData.pitchLink} target="_blank" className="underline text-blue-400">
               Se PDF
             </a>
+            {userData.pitchReady && <p className="text-green-400">✅ Genererad</p>}
           </div>
 
           <div className="bg-gray-800 p-4 rounded-xl">
