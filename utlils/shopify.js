@@ -1,7 +1,6 @@
 // /utils/shopify.js
 
 export async function createShopifyStore(productName) {
-  // 1. Skapa produktinfo
   const product = {
     name: productName,
     description: `En AI-genererad produkt: ${productName}`,
@@ -9,7 +8,6 @@ export async function createShopifyStore(productName) {
     image: `https://source.unsplash.com/featured/?${encodeURIComponent(productName)}`
   };
 
-  // 2. Returnera en fejkad Shopify-url (simulerad)
   return {
     success: true,
     product,
