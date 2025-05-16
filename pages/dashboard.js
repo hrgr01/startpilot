@@ -8,7 +8,8 @@ export default function Dashboard() {
     status: "Butik skapad",
     storeLink: "https://shopify.com/startpilot-demo",
     pitchLink: "/pitch/startpilot-pitch.pdf",
-    videoLink: "/video/ai-video-demo.mp4"
+    videoLink: "/video/ai-video-demo.mp4",
+    emailFlowStatus: "Utskick pågår"
   });
 
   return (
@@ -28,7 +29,7 @@ export default function Dashboard() {
           <p className="text-lg">{userData.idea}</p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 gap-6 mb-6">
           <div className="bg-gray-800 p-4 rounded-xl">
             <h3 className="text-xl font-semibold mb-1">📦 Butik</h3>
             <p>Status: {userData.status}</p>
@@ -37,6 +38,13 @@ export default function Dashboard() {
             </a>
           </div>
 
+          <div className="bg-gray-800 p-4 rounded-xl">
+            <h3 className="text-xl font-semibold mb-1">📬 E-postflöde</h3>
+            <p>{userData.emailFlowStatus}</p>
+          </div>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6">
           <div className="bg-gray-800 p-4 rounded-xl">
             <h3 className="text-xl font-semibold mb-1">📄 Pitch Deck</h3>
             <a href={userData.pitchLink} target="_blank" className="underline text-blue-400">
