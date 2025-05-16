@@ -1,6 +1,7 @@
 // /pages/dashboard.js
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { createShopifyStore } from "../utils/shopify";
 
 export default function Dashboard() {
   const [userData, setUserData] = useState({
@@ -13,18 +14,23 @@ export default function Dashboard() {
     weeklySuggestions: [
       {
         title: "AI-genererade anslagstavlor för kontor",
-        shopifyLink: "https://shopify.com/create?product=anslagstavla"
+        shopifyProduct: "anslagstavla"
       },
       {
         title: "Print-on-demand posters med motiverande citat",
-        shopifyLink: "https://shopify.com/create?product=poster"
+        shopifyProduct: "poster"
       },
       {
         title: "Smarta kalendrar för ADHD-användare",
-        shopifyLink: "https://shopify.com/create?product=kalender"
+        shopifyProduct: "kalender"
       }
     ]
   });
+
+  const handleCreateStore = async (product) => {
+    const response = await createShopifyStore(product);
+    if (response?.url) window.open(response.url, "_blank");
+  };
 
   return (
     <main className="min-h-screen bg-black text-white px-6 py-16">
@@ -81,13 +87,12 @@ export default function Dashboard() {
               <li key={i}>
                 <span className="font-medium">{item.title}</span>
                 <br />
-                <a
-                  href={item.shopifyLink}
-                  target="_blank"
-                  className="text-blue-500 underline"
+                <button
+                  onClick={() => handleCreateStore(item.shopifyProduct)}
+                  className="text-blue-500 underline mt-1"
                 >
                   ➕ Lägg till i Shopify-butiken
-                </a>
+                </button>
               </li>
             ))}
           </ul>
