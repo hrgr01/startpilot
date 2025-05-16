@@ -11,9 +11,18 @@ export default function Dashboard() {
     videoLink: "/video/ai-video-demo.mp4",
     emailFlowStatus: "Utskick pågår",
     weeklySuggestions: [
-      "AI-genererade anslagstavlor för kontor",
-      "Print-on-demand posters med motiverande citat",
-      "Smarta kalendrar för ADHD-användare"
+      {
+        title: "AI-genererade anslagstavlor för kontor",
+        shopifyLink: "https://shopify.com/create?product=anslagstavla"
+      },
+      {
+        title: "Print-on-demand posters med motiverande citat",
+        shopifyLink: "https://shopify.com/create?product=poster"
+      },
+      {
+        title: "Smarta kalendrar för ADHD-användare",
+        shopifyLink: "https://shopify.com/create?product=kalender"
+      }
     ]
   });
 
@@ -67,9 +76,19 @@ export default function Dashboard() {
 
         <div className="bg-white text-black p-6 rounded-xl mt-10">
           <h2 className="text-2xl font-bold mb-4">✨ AI-förslag – Ny vecka, nya idéer</h2>
-          <ul className="list-disc pl-5 space-y-1">
+          <ul className="list-disc pl-5 space-y-3">
             {userData.weeklySuggestions.map((item, i) => (
-              <li key={i}>{item}</li>
+              <li key={i}>
+                <span className="font-medium">{item.title}</span>
+                <br />
+                <a
+                  href={item.shopifyLink}
+                  target="_blank"
+                  className="text-blue-500 underline"
+                >
+                  ➕ Lägg till i Shopify-butiken
+                </a>
+              </li>
             ))}
           </ul>
         </div>
