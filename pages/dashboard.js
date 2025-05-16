@@ -9,12 +9,17 @@ export default function Dashboard() {
     storeLink: "https://shopify.com/startpilot-demo",
     pitchLink: "/pitch/startpilot-pitch.pdf",
     videoLink: "/video/ai-video-demo.mp4",
-    emailFlowStatus: "Utskick pågår"
+    emailFlowStatus: "Utskick pågår",
+    weeklySuggestions: [
+      "AI-genererade anslagstavlor för kontor",
+      "Print-on-demand posters med motiverande citat",
+      "Smarta kalendrar för ADHD-användare"
+    ]
   });
 
   return (
     <main className="min-h-screen bg-black text-white px-6 py-16">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -44,7 +49,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-2 gap-6 mb-6">
           <div className="bg-gray-800 p-4 rounded-xl">
             <h3 className="text-xl font-semibold mb-1">📄 Pitch Deck</h3>
             <a href={userData.pitchLink} target="_blank" className="underline text-blue-400">
@@ -58,6 +63,15 @@ export default function Dashboard() {
               Spela upp video
             </a>
           </div>
+        </div>
+
+        <div className="bg-white text-black p-6 rounded-xl mt-10">
+          <h2 className="text-2xl font-bold mb-4">✨ AI-förslag – Ny vecka, nya idéer</h2>
+          <ul className="list-disc pl-5 space-y-1">
+            {userData.weeklySuggestions.map((item, i) => (
+              <li key={i}>{item}</li>
+            ))}
+          </ul>
         </div>
       </div>
     </main>
