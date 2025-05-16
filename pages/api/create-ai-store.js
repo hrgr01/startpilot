@@ -1,41 +1,33 @@
 // /pages/api/create-ai-store.js
-import { createShopifyStore } from "../../utils/shopify";
-import OpenAI from "openai";
-
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+import { createShopifyProduct } from "../../utils/shopify";
 
 export default async function handler(req, res) {
   const { idea } = req.body;
 
+  if (!idea) {
+    return res.status(400).json({ error: "Ingen idé angiven." });
+  }
+
   try {
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4",
-      messages: [
-        {
-          role: "system",
-          content: "Du är en e-handelsstrateg som skapar butiksideér från prompts."
-        },
-        {
-          role: "user",
-          content: `Skapa ett produktnamn och kort beskrivning för: ${idea}`
-        }
-      ]
-    });
-
-    const aiText = completion.choices[0].message.content;
-    const [titleLine, ...descLines] = aiText.split("\n");
-    const title = titleLine.replace("Produktnamn:", "").trim();
-    const body_html = descLines.join("\n").replace("Beskrivning:", "").trim();
-
-    const productPayload = {
-      title,
-      body_html
+    const product = {
+      title: idea,
+      body_html: `<strong>${idea}</strong> – En AI-genererad produktbeskrivning.`,
+      vendor: "Startpilot AI",
+      product_type: "AI-produkt",
+      tags: ["AI", "startup", "idé"]
     };
 
-    const result = await createShopifyStore(productPayload.title);
-    res.status(200).json({ success: true, productLink: result.url });
+    const result = await createShopifyProduct(product);
+
+    if (result?.admin_graphql_api_id) {
+      return res.status(200).json({
+        productLink: `https://${process.env.SHOPIFY_STORE_DOMAIN}/admin/products/${result.id}`
+      });
+    } else {
+      return res.status(500).json({ error: "Misslyckades att skapa produkt" });
+    }
   } catch (error) {
-    console.error("AI/shopify error:", error);
-    res.status(500).json({ success: false, error: error.message });
+    console.error("Fel vid produktskapande:", error);
+    return res.status(500).json({ error: "Serverfel" });
   }
 }
