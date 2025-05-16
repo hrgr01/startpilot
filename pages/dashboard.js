@@ -32,6 +32,17 @@ export default function Dashboard() {
     if (response?.url) window.open(response.url, "_blank");
   };
 
+  const handleAIStoreGeneration = async () => {
+    const res = await fetch("/api/create-ai-store", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idea: userData.idea })
+    });
+
+    const data = await res.json();
+    if (data?.productLink) window.open(data.productLink, "_blank");
+  };
+
   return (
     <main className="min-h-screen bg-black text-white px-6 py-16">
       <div className="max-w-5xl mx-auto">
@@ -47,6 +58,12 @@ export default function Dashboard() {
         <div className="bg-white text-black p-6 rounded-xl mb-6">
           <h2 className="text-2xl font-bold mb-2">Din affärsidé</h2>
           <p className="text-lg">{userData.idea}</p>
+          <button
+            onClick={handleAIStoreGeneration}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            🚀 Skapa Shopify-produkt med AI
+          </button>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6 mb-6">
