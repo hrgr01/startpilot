@@ -22,13 +22,15 @@ export default async function handler(req, res) {
     const mailOptions = {
       from: `Startpilot <${process.env.SMTP_USER}>`,
       to: email,
-      subject: "Din AI-startupplan är redo!",
+      replyTo: "support@startpilot.org",
+      subject: "🚀 Din AI-startup är redo!",
       html: `
-        <h1>Hej!</h1>
-        <p>Din AI-idé <strong>\"${idea}\"</strong> har behandlats.</p>
-        <p>Logga in på din dashboard för att se din pitch, produkt, video och annonser!</p>
-        <p><a href="https://startpilot.org/dashboard">👉 Gå till dashboard</a></p>
-        <p>Hälsningar,<br>Startpilot-teamet</p>
+        <h1>Hej entreprenör 👋</h1>
+        <p>Din AI-idé <strong>"${idea}"</strong> är nu bearbetad.</p>
+        <p>Klicka nedan för att komma till din unika dashboard:</p>
+        <p><a href="https://startpilot.org/dashboard" style="background:#000;color:#fff;padding:10px 20px;text-decoration:none;border-radius:5px">🌟 Öppna din AI-dashboard</a></p>
+        <br>
+        <p>Vi hörs!<br><strong>Startpilot-teamet</strong></p>
       `
     };
 
