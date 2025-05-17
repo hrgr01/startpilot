@@ -16,6 +16,8 @@
     "framer-motion": "^10.16.1",
     "react-intersection-observer": "^9.4.3",
     "chart.js": "^4.4.0"
+    "nodemailer": "^6.9.4",
+    "@shopify/shopify-api": "^6.4.0"
   },
   "devDependencies": {
     "tailwindcss": "^3.3.2",
