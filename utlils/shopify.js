@@ -1,23 +1,29 @@
-// /utils/shopify.js
+// utils/shopify.js
 import { shopifyApi, LATEST_API_VERSION } from "@shopify/shopify-api";
 
-export const shopify = shopifyApi({
+const shopify = shopifyApi({
   apiKey: process.env.SHOPIFY_API_KEY,
   apiSecretKey: process.env.SHOPIFY_API_SECRET,
-  scopes: ["write_products"],
-  hostName: process.env.SHOPIFY_HOST.replace(/^https?:\/\//, ""),
+  adminApiAccessToken: process.env.SHOPIFY_ACCESS_TOKEN,
+  scopes: ['write_products'],
+  hostName: process.env.SHOPIFY_STORE_DOMAIN.replace(/^https?:\/\//, ""),
   apiVersion: LATEST_API_VERSION,
-  isEmbeddedApp: false,
+  isEmbeddedApp: false
 });
 
-export async function createShopifyProduct(shop, accessToken, productData) {
-  const client = new shopify.clients.Rest({ session: { shop, accessToken } });
-
-  const product = await client.post({
-    path: "products",
-    data: { product: productData },
-    type: "json",
+export async function createShopifyProduct(product) {
+  const client = new shopify.clients.Rest({
+    session: {
+      accessToken: process.env.SHOPIFY_ACCESS_TOKEN,
+      shop: process.env.SHOPIFY_STORE_DOMAIN,
+    }
   });
 
-  return product?.body?.product;
+  const response = await client.post({
+    path: "products",
+    data: { product },
+    type: "application/json",
+  });
+
+  return response.body.product;
 }
