@@ -1,12 +1,14 @@
 // utils/shopify.js
-import { shopifyApi, LATEST_API_VERSION } from "@shopify/shopify-api";
+
+import '@shopify/shopify-api/adapters/node'; // 💥 NYCKELRAD – laddar rätt adapter
+import { shopifyApi, LATEST_API_VERSION } from '@shopify/shopify-api';
 
 const shopify = shopifyApi({
   apiKey: process.env.SHOPIFY_API_KEY,
   apiSecretKey: process.env.SHOPIFY_API_SECRET,
   adminApiAccessToken: process.env.SHOPIFY_ACCESS_TOKEN,
   scopes: ['write_products'],
-  hostName: (process.env.SHOPIFY_STORE_DOMAIN || "").replace(/^https?:\/\//, ""),
+  hostName: (process.env.SHOPIFY_STORE_DOMAIN || '').replace(/^https?:\/\//, ''),
   apiVersion: LATEST_API_VERSION,
   isEmbeddedApp: false
 });
@@ -20,9 +22,9 @@ export async function createShopifyProduct(product) {
   });
 
   const response = await client.post({
-    path: "products",
+    path: 'products',
     data: { product },
-    type: "application/json",
+    type: 'application/json',
   });
 
   return response.body.product;
