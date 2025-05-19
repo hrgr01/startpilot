@@ -6,7 +6,7 @@ const shopify = shopifyApi({
   apiSecretKey: process.env.SHOPIFY_API_SECRET,
   adminApiAccessToken: process.env.SHOPIFY_ACCESS_TOKEN,
   scopes: ['write_products'],
-  hostName: process.env.SHOPIFY_STORE_DOMAIN.replace(/^https?:\/\//, ""),
+  hostName: (process.env.SHOPIFY_STORE_DOMAIN || "").replace(/^https?:\/\//, ""),
   apiVersion: LATEST_API_VERSION,
   isEmbeddedApp: false
 });
