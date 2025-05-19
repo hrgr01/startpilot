@@ -1,7 +1,7 @@
 // /pages/dashboard.js
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { createShopifyProduct } from "../../utils/shopify";
+import { createShopifyProduct } from "../utils/shopify";
 
 export default function Dashboard() {
   const [userData, setUserData] = useState({
