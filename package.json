@@ -15,7 +15,7 @@
     "react-intersection-observer": "^9.4.3",
     "chart.js": "^4.4.0",
     "openai": "^4.0.0",
-    "nodemailer": "^6.9.4",
+    "nodemailer": "^6.9.1",
     "@shopify/shopify-api": "^6.2.0"
   },
   "devDependencies": {
