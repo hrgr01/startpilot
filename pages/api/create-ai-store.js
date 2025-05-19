@@ -1,5 +1,5 @@
 // /pages/api/create-ai-store.js
-import { createShopifyProduct } from "@/utils/shopify";
+import { createShopifyProduct } from "../../utils/shopify";
 
 export default async function handler(req, res) {
   const { idea, email } = req.body;
