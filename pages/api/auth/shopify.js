@@ -1,26 +1,29 @@
-// /pages/api/auth/shopify.js
-import { shopifyApi } from "@shopify/shopify-api";
+// utils/shopify.js
+import { shopifyApi, LATEST_API_VERSION, RestClient } from "@shopify/shopify-api";
 
 const shopify = shopifyApi({
   apiKey: process.env.SHOPIFY_API_KEY,
   apiSecretKey: process.env.SHOPIFY_API_SECRET,
-  scopes: ["write_products", "read_products"],
-  hostName: process.env.SHOPIFY_APP_URL.replace(/^https:\/\//, ""),
-  isEmbeddedApp: false,
-  apiVersion: "2023-07",
+  adminApiAccessToken: process.env.SHOPIFY_ACCESS_TOKEN,
+  scopes: ['write_products'],
+  hostName: process.env.SHOPIFY_STORE_DOMAIN.replace(/^https?:\/\//, ""),
+  apiVersion: LATEST_API_VERSION,
+  isEmbeddedApp: false
 });
 
-export default async function handler(req, res) {
+export async function createShopifyProduct(productData) {
   try {
-    const authRoute = await shopify.auth.begin({
-      shop: req.query.shop,
-      callbackPath: "/api/auth/callback",
-      isOnline: true,
-      rawRequest: req,
-      rawResponse: res,
+    const client = new RestClient(process.env.SHOPIFY_STORE_DOMAIN, process.env.SHOPIFY_ACCESS_TOKEN);
+
+    const response = await client.post({
+      path: 'products',
+      data: { product: productData },
+      type: 'application/json',
     });
+
+    return response.body.product;
   } catch (error) {
-    console.error("OAuth init error:", error);
-    res.status(500).send("OAuth failed");
+    console.error("Fel i createShopifyProduct:", error);
+    throw error;
   }
 }
