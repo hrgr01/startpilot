@@ -1,3 +1,7 @@
+import dynamic from "next/dynamic";
+
+// Ladda in 3D-komponenten utan SSR (för att undvika byggfel)
+const Hero3DSection = dynamic(() => import("../components/Hero3DSection"), { ssr: false });
 // /pages/index.js
 import Link from "next/link";
 import { motion } from "framer-motion";
