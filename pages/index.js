@@ -1,15 +1,18 @@
 import dynamic from "next/dynamic";
-
-// Ladda in 3D-komponenten utan SSR (för att undvika byggfel)
-const Hero3DSection = dynamic(() => import("../components/Hero3DSection"), { ssr: false });
-// /pages/index.js
 import Link from "next/link";
 import { motion } from "framer-motion";
 import Image from "next/image";
 
+// Importera utan SSR
+const Hero3DSection = dynamic(() => import("../components/Hero3DSection"), { ssr: false });
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-black text-white font-sans">
+      {/* Hero 3D-sektion överst */}
+      <Hero3DSection />
+
+      {/* Vanliga hero-rubriken */}
       <section className="text-center py-24 px-6">
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
@@ -41,6 +44,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Funktioner */}
       <section className="bg-gray-900 py-20 px-6">
         <h2 className="text-3xl font-semibold text-center mb-10">Vad AI:n gör åt dig</h2>
         <div className="grid md:grid-cols-4 gap-8 max-w-6xl mx-auto">
@@ -58,6 +62,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Exempelvideo */}
       <section className="py-20 px-6">
         <h2 className="text-3xl font-semibold text-center mb-10">Exempel på vad du får</h2>
         <div className="flex justify-center">
@@ -65,6 +70,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Footer */}
       <footer className="text-center py-10 text-sm text-gray-500">
         &copy; {new Date().getFullYear()} Startpilot. info@startpilot.org
       </footer>
