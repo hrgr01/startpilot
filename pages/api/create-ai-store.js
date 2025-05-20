@@ -11,7 +11,7 @@ export default async function handler(req, res) {
   try {
     const product = {
       title: idea,
-      body_html: `<strong>${idea}</strong> – En AI-genererad produktbeskrivning.",
+      body_html: `<strong>${idea}</strong> – En AI-genererad produktbeskrivning.`,
       vendor: "Startpilot AI",
       product_type: "AI-produkt",
       tags: ["AI", "startup", "idé"]
