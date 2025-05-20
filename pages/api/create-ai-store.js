@@ -11,7 +11,7 @@ export default async function handler(req, res) {
   try {
     const product = {
       title: idea,
-      body_html: `<strong>${idea}</strong> – En AI-genererad produktbeskrivning.`,
+      body_html: `<strong>${idea}</strong> – En AI-genererad produktbeskrivning.",
       vendor: "Startpilot AI",
       product_type: "AI-produkt",
       tags: ["AI", "startup", "idé"]
@@ -25,7 +25,14 @@ export default async function handler(req, res) {
       await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/email-flow`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, productLink, idea })
+        body: JSON.stringify({
+          email,
+          productLink,
+          idea,
+          pitch: `Detta är en AI-genererad pitch för idén: ${idea}`,
+          videoUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/videos/demo-${idea}.mp4`,
+          adText: `🚀 Starta ${idea} med hjälp av AI! Klicka här.`
+        })
       });
 
       return res.status(200).json({ productLink });
