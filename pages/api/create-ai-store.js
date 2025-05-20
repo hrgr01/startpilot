@@ -2,10 +2,10 @@
 import { createShopifyProduct } from "../../utils/shopify";
 
 export default async function handler(req, res) {
-  const { idea, email } = req.body;
+  const { idea, email, token, storeDomain } = req.body;
 
-  if (!idea || !email) {
-    return res.status(400).json({ error: "Idé eller e-post saknas." });
+  if (!idea || !email || !token || !storeDomain) {
+    return res.status(400).json({ error: "Idé, e-post, token eller domän saknas." });
   }
 
   try {
@@ -17,10 +17,10 @@ export default async function handler(req, res) {
       tags: ["AI", "startup", "idé"]
     };
 
-    const result = await createShopifyProduct(product);
+    const result = await createShopifyProduct(product, token, storeDomain);
 
     if (result?.admin_graphql_api_id) {
-      const productLink = `https://${process.env.SHOPIFY_STORE_DOMAIN}/admin/products/${result.id}`;
+      const productLink = `https://${storeDomain}/admin/products/${result.id}`;
 
       await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/email-flow`, {
         method: "POST",
