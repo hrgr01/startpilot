@@ -3,14 +3,14 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import Image from "next/image";
 
-// Importera utan SSR
-const Hero3DSection = dynamic(() => import("../components/Hero3DSection"), { ssr: false });
+// Importera utan SSR (ny uppdaterad 3D-komponent)
+const Futuristic3DHero = dynamic(() => import("../components/Futuristic3DHero"), { ssr: false });
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-black text-white font-sans">
       {/* Hero 3D-sektion överst */}
-      <Hero3DSection />
+      <Futuristic3DHero />
 
       {/* Vanliga hero-rubriken */}
       <section className="text-center py-24 px-6">
