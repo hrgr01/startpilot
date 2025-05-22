@@ -17,7 +17,7 @@
     "openai": "^4.0.0",
     "nodemailer": "^6.9.1",
     "@shopify/shopify-api": "^7.7.0",
-    "three": "0.150.1",
+    "three": "0.152.2",
     "@react-three/fiber": "8.13.7",
     "@react-three/drei": "9.71.0"
   },
