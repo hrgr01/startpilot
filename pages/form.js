@@ -2,26 +2,26 @@
 import { useState } from "react";
 
 export default function FormPage() {
-  const [idea, setIdea] = useState("");
   const [email, setEmail] = useState("");
+  const [idea, setIdea] = useState("");
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [sent, setSent] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setData(null);
-    setSubmitted(false);
+    setSent(false);
     try {
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idea, email })
+        body: JSON.stringify({ email, idea })
       });
       const result = await res.json();
       setData(result);
-      setSubmitted(true);
+      setSent(true);
     } catch (err) {
       console.error("Fel:", err);
     }
@@ -35,12 +35,11 @@ export default function FormPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="email"
-            name="email"
+            className="w-full p-4 text-black rounded"
             placeholder="Din e-postadress"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full p-4 text-black rounded"
           />
           <textarea
             className="w-full p-4 text-black rounded"
@@ -59,10 +58,10 @@ export default function FormPage() {
           </button>
         </form>
 
-        {submitted && (
-          <div className="mt-6 text-green-400 text-center">
+        {sent && (
+          <p className="mt-4 text-green-400">
             ✅ Tack! Du får ditt AI-genererade paket skickat till <strong>{email}</strong> inom några minuter.
-          </div>
+          </p>
         )}
 
         {data && (
