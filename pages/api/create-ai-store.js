@@ -1,5 +1,11 @@
 // /pages/api/create-ai-store.js
 import { createShopifyProduct } from "../../utils/shopify";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+);
 
 export default async function handler(req, res) {
   const { idea, email, shopDomain, accessToken } = req.body;
@@ -22,6 +28,18 @@ export default async function handler(req, res) {
     if (result?.admin_graphql_api_id) {
       const productLink = `https://${shopDomain}/admin/products/${result.id}`;
 
+      // 🧠 SPARA I SUPABASE
+      await supabase.from("projects").insert([
+        {
+          email,
+          idea,
+          product_link: productLink,
+          shop_domain: shopDomain,
+          created_at: new Date().toISOString()
+        }
+      ]);
+
+      // 📬 SKICKA E-POST
       await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/email-flow`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
