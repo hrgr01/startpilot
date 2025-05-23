@@ -26,13 +26,11 @@ function RotatingBox() {
 
 export default function Hero3DSection() {
   return (
-    <div className="w-full h-[500px] bg-black">
+    <div className="w-full h-[600px] bg-black">
       <Canvas camera={{ position: [0, 0, 5], fov: 60 }}>
         <ambientLight intensity={0.5} />
         <directionalLight position={[5, 5, 5]} intensity={1} />
-        <Suspense
-          fallback={<Html><p style={{ color: 'white' }}>Laddar...</p></Html>}
-        >
+        <Suspense fallback={<Html><p style={{ color: 'white' }}>Laddar...</p></Html>}>
           <Environment preset="city" />
           <RotatingBox />
         </Suspense>
