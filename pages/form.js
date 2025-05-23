@@ -2,26 +2,23 @@
 import { useState } from "react";
 
 export default function FormPage() {
-  const [email, setEmail] = useState("");
   const [idea, setIdea] = useState("");
+  const [email, setEmail] = useState("");
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setData(null);
-    setSent(false);
     try {
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, idea })
+        body: JSON.stringify({ idea, email })
       });
       const result = await res.json();
       setData(result);
-      setSent(true);
     } catch (err) {
       console.error("Fel:", err);
     }
@@ -34,8 +31,8 @@ export default function FormPage() {
         <h1 className="text-4xl font-bold mb-6 text-center">Skicka in din idé</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
-            type="email"
             className="w-full p-4 text-black rounded"
+            type="email"
             placeholder="Din e-postadress"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -57,12 +54,6 @@ export default function FormPage() {
             {loading ? "Genererar..." : "Skicka"}
           </button>
         </form>
-
-        {sent && (
-          <p className="mt-4 text-green-400">
-            ✅ Tack! Du får ditt AI-genererade paket skickat till <strong>{email}</strong> inom några minuter.
-          </p>
-        )}
 
         {data && (
           <div className="mt-10 space-y-6">
