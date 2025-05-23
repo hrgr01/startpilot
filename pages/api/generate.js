@@ -65,7 +65,7 @@ Svar som JSON. Inkludera alla fält exakt.`;
       html: htmlContent
     });
 
-    res.status(200).json(data);
+    res.status(200).json({ ...data, success: true });
   } catch (error) {
     console.error("Fel i generate.js:", error);
     res.status(500).json({ error: "Kunde inte generera affärspaket." });
