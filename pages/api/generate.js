@@ -1,5 +1,6 @@
 // /pages/api/generate.js
 import { OpenAI } from "openai";
+import nodemailer from "nodemailer";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -32,33 +33,41 @@ Svar som JSON. Inkludera alla fält exakt.`;
     });
 
     const output = completion.choices[0].message.content;
-    console.log("GPT Output:", output);
-
-    // Kontrollera att output innehåller JSON-start
-    if (!output.trim().startsWith("{")) {
-      throw new Error("GPT svarade inte med giltig JSON. Svar:\n" + output);
-    }
-
     const parsed = JSON.parse(output);
 
-    // Skicka resultatet till klienten
+    const transporter = nodemailer.createTransport({
+      host: "smtp-relay.sendinblue.com",
+      port: 587,
+      auth: {
+        user: process.env.BREVO_USER,
+        pass: process.env.BREVO_SMTP_KEY
+      }
+    });
+
+    await transporter.sendMail({
+      from: "Startpilot <info@startpilot.org>",
+      to: email,
+      subject: `🚀 Din AI-startupidé: ${parsed["Företagsnamn"]}`,
+      text: `Här är ditt AI-genererade paket:
+
+Företagsnamn: ${parsed["Företagsnamn"]}
+Tagline: ${parsed["Tagline"]}
+Affärsidé: ${parsed["Affärsidé"]}
+Målgrupp: ${parsed["Målgrupp"]}
+
+Produktbeskrivning: ${parsed["Produktbeskrivning"]}
+FAQ: ${parsed["FAQ (3 frågor)"]}
+Call-to-action: ${parsed["Call-to-action"]}
+E-postämne: ${parsed["E-postämnesrad"]}
+Facebook-annonser: ${parsed["3 Facebook-annonser (hook + värde + CTA)"]}
+Videoidé: ${parsed["En kort videobeskrivning"]}
+Pitchdeck-text: ${parsed["Text till pitchdeck"]}
+Produktförslag: ${parsed["Förslag på produkt att sälja + dropshippingmodell"]}`
+    });
+
     res.status(200).json(parsed);
-
-    // Skicka också som e-post till användaren via Brevo (om e-post finns)
-    if (email) {
-      await fetch(`${process.env.BREVO_FUNCTION_URL}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          subject: parsed["E-postämnesrad"] || "Ditt AI-genererade affärspaket",
-          content: Object.entries(parsed).map(([key, val]) => `<h3>${key}</h3><p>${val}</p>`).join("")
-        })
-      });
-    }
-
   } catch (error) {
-    console.error("GPT error:", error.message || error);
+    console.error("Fel i API:", error);
     res.status(500).json({ error: "Kunde inte generera affärspaket." });
   }
 }
