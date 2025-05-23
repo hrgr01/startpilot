@@ -35,6 +35,8 @@ Generera följande:
 Svar som JSON. Inkludera alla fält exakt.`;
 
   try {
+    console.log("Skickar prompt till OpenAI:", prompt);
+
     const completion = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [{ role: "user", content: prompt }],
@@ -42,7 +44,15 @@ Svar som JSON. Inkludera alla fält exakt.`;
     });
 
     const output = completion.choices[0].message.content;
-    const data = JSON.parse(output);
+    console.log("Svar från OpenAI:", output);
+
+    let data;
+    try {
+      data = JSON.parse(output);
+    } catch (err) {
+      console.error("Kunde inte parsa JSON:", output);
+      return res.status(500).json({ error: "Fel i GPT-4-svaret." });
+    }
 
     const htmlContent = `
       <h1>${data["Företagsnamn"]} – ${data["Tagline"]}</h1>
@@ -65,7 +75,7 @@ Svar som JSON. Inkludera alla fält exakt.`;
       html: htmlContent
     });
 
-    res.status(200).json({ ...data, success: true });
+    res.status(200).json(data);
   } catch (error) {
     console.error("Fel i generate.js:", error);
     res.status(500).json({ error: "Kunde inte generera affärspaket." });
