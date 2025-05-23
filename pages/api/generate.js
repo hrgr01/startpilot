@@ -4,6 +4,15 @@ import nodemailer from "nodemailer";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+const transporter = nodemailer.createTransport({
+  host: "smtp-relay.brevo.com",
+  port: 587,
+  auth: {
+    user: "info@startpilot.org",
+    pass: process.env.BREVO_SMTP_PASSWORD
+  }
+});
+
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
 
@@ -33,41 +42,32 @@ Svar som JSON. Inkludera alla fält exakt.`;
     });
 
     const output = completion.choices[0].message.content;
-    const parsed = JSON.parse(output);
+    const data = JSON.parse(output);
 
-    const transporter = nodemailer.createTransport({
-      host: "smtp-relay.sendinblue.com",
-      port: 587,
-      auth: {
-        user: process.env.BREVO_USER,
-        pass: process.env.BREVO_SMTP_KEY
-      }
-    });
+    const htmlContent = `
+      <h1>${data["Företagsnamn"]} – ${data["Tagline"]}</h1>
+      <p><strong>Affärsidé:</strong> ${data["Affärsidé"]}</p>
+      <p><strong>Målgrupp:</strong> ${data["Målgrupp"]}</p>
+      <p><strong>Produktbeskrivning:</strong> ${data["Produktbeskrivning"]}</p>
+      <p><strong>FAQ:</strong> ${data["FAQ (3 frågor)"]}</p>
+      <p><strong>Call-to-action:</strong> ${data["Call-to-action"]}</p>
+      <p><strong>E-postämnesrad:</strong> ${data["E-postämnesrad"]}</p>
+      <p><strong>Facebook-annonser:</strong> ${data["3 Facebook-annonser (hook + värde + CTA)"]}</p>
+      <p><strong>Videoidé:</strong> ${data["En kort videobeskrivning"]}</p>
+      <p><strong>Pitchdeck:</strong> ${data["Text till pitchdeck"]}</p>
+      <p><strong>Produktförslag:</strong> ${data["Förslag på produkt att sälja + dropshippingmodell"]}</p>
+    `;
 
     await transporter.sendMail({
-      from: "Startpilot <info@startpilot.org>",
+      from: 'Startpilot <info@startpilot.org>',
       to: email,
-      subject: `🚀 Din AI-startupidé: ${parsed["Företagsnamn"]}`,
-      text: `Här är ditt AI-genererade paket:
-
-Företagsnamn: ${parsed["Företagsnamn"]}
-Tagline: ${parsed["Tagline"]}
-Affärsidé: ${parsed["Affärsidé"]}
-Målgrupp: ${parsed["Målgrupp"]}
-
-Produktbeskrivning: ${parsed["Produktbeskrivning"]}
-FAQ: ${parsed["FAQ (3 frågor)"]}
-Call-to-action: ${parsed["Call-to-action"]}
-E-postämne: ${parsed["E-postämnesrad"]}
-Facebook-annonser: ${parsed["3 Facebook-annonser (hook + värde + CTA)"]}
-Videoidé: ${parsed["En kort videobeskrivning"]}
-Pitchdeck-text: ${parsed["Text till pitchdeck"]}
-Produktförslag: ${parsed["Förslag på produkt att sälja + dropshippingmodell"]}`
+      subject: `🚀 Din AI-startupidé: ${data["Företagsnamn"]}`,
+      html: htmlContent
     });
 
-    res.status(200).json(parsed);
+    res.status(200).json(data);
   } catch (error) {
-    console.error("Fel i API:", error);
+    console.error("Fel i generate.js:", error);
     res.status(500).json({ error: "Kunde inte generera affärspaket." });
   }
 }
