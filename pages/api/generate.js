@@ -59,21 +59,23 @@ Svar som JSON. Inkludera alla fält exakt.`;
       <p><strong>Affärsidé:</strong> ${data["Affärsidé"]}</p>
       <p><strong>Målgrupp:</strong> ${data["Målgrupp"]}</p>
       <p><strong>Produktbeskrivning:</strong> ${data["Produktbeskrivning"]}</p>
-      <p><strong>FAQ:</strong> ${data["FAQ (3 frågor)"]}</p>
+      <p><strong>FAQ:</strong><ul>${(data["FAQ (3 frågor)"] || []).map(q => `<li><strong>${q.Fråga}</strong>: ${q.Svar}</li>`).join('')}</ul></p>
       <p><strong>Call-to-action:</strong> ${data["Call-to-action"]}</p>
       <p><strong>E-postämnesrad:</strong> ${data["E-postämnesrad"]}</p>
-      <p><strong>Facebook-annonser:</strong> ${data["3 Facebook-annonser (hook + värde + CTA)"]}</p>
+      <p><strong>Facebook-annonser:</strong><ul>${(data["3 Facebook-annonser"] || []).map(ad => `<li><strong>${ad.Hook}</strong> – ${ad.Värde} (${ad.CTA})</li>`).join('')}</ul></p>
       <p><strong>Videoidé:</strong> ${data["En kort videobeskrivning"]}</p>
       <p><strong>Pitchdeck:</strong> ${data["Text till pitchdeck"]}</p>
       <p><strong>Produktförslag:</strong> ${data["Förslag på produkt att sälja + dropshippingmodell"]}</p>
     `;
 
-    await transporter.sendMail({
-      from: 'Startpilot <info@startpilot.org>',
-      to: email,
-      subject: `🚀 Din AI-startupidé: ${data["Företagsnamn"]}`,
-      html: htmlContent
-    });
+    if (email) {
+      await transporter.sendMail({
+        from: 'Startpilot <info@startpilot.org>',
+        to: email,
+        subject: `🚀 Din AI-startupidé: ${data["Företagsnamn"]}`,
+        html: htmlContent
+      });
+    }
 
     res.status(200).json(data);
   } catch (error) {
