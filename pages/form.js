@@ -1,81 +1,68 @@
-// pages/form.js
-import { useState } from 'react';
+// /pages/form.js
+import { useState } from "react";
 
-export default function Form() {
-  const [idea, setIdea] = useState('');
-  const [email, setEmail] = useState('');
+export default function FormPage() {
+  const [idea, setIdea] = useState("");
+  const [email, setEmail] = useState("");
+  const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
-    try {
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ idea, email })
-      });
-
-      if (response.ok) {
-        setSubmitted(true);
-      } else {
-        alert('Något gick fel. Försök igen.');
-      }
-    } catch (error) {
-      console.error('Fel vid skick:', error);
-      alert('Kunde inte skicka formuläret.');
-    } finally {
-      setLoading(false);
-    }
+    const res = await fetch("/api/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idea, email }),
+    });
+    setLoading(false);
+    if (res.ok) setSent(true);
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#0f172a] text-white flex flex-col items-center justify-center px-6 py-12">
+      <h1 className="text-3xl md:text-5xl font-bold mb-6 text-center">
+        🚀 Skapa din AI-affärsidé med Startpilot
+      </h1>
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-xl space-y-6 bg-zinc-900 p-8 rounded-2xl shadow-xl"
+        className="w-full max-w-xl bg-[#1e293b] p-8 rounded-2xl shadow-lg"
       >
-        <h1 className="text-3xl font-bold text-center">🚀 Starta din AI-idé</h1>
-
-        <div>
-          <label className="block text-sm mb-1">Din affärsidé</label>
+        <label className="block mb-4">
+          <span className="text-sm font-medium">Din affärsidé</span>
           <textarea
+            required
             value={idea}
             onChange={(e) => setIdea(e.target.value)}
-            required
-            placeholder="Beskriv din idé..."
-            className="w-full p-3 rounded-md bg-zinc-800 border border-zinc-700 placeholder-zinc-500"
-            rows={4}
+            placeholder="T.ex. massagebokning-app för stressade människor"
+            className="mt-1 w-full p-4 rounded-lg bg-[#0f172a] border border-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-400"
+            rows={5}
           />
-        </div>
+        </label>
 
-        <div>
-          <label className="block text-sm mb-1">Din e-postadress</label>
+        <label className="block mb-6">
+          <span className="text-sm font-medium">Din e-post</span>
           <input
+            required
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required
-            placeholder="namn@email.se"
-            className="w-full p-3 rounded-md bg-zinc-800 border border-zinc-700 placeholder-zinc-500"
+            placeholder="du@email.com"
+            className="mt-1 w-full p-4 rounded-lg bg-[#0f172a] border border-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-400"
           />
-        </div>
+        </label>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-3 bg-white text-black rounded-md font-semibold hover:bg-zinc-200 transition"
+          className="w-full py-4 rounded-xl bg-teal-500 hover:bg-teal-600 transition text-white text-lg font-semibold"
         >
-          {loading ? 'Skickar...' : 'Starta gratis'}
+          {loading ? "Skickar..." : "Skapa AI-paket"}
         </button>
 
-        {submitted && (
-          <p className="text-green-400 text-center font-medium">
-            ✅ Ditt AI-paket är på väg till din mail!
+        {sent && (
+          <p className="mt-6 text-center text-green-400 text-md font-medium">
+            ✅ Tack för att du använder Startpilot! Ditt AI-paket är skickat 💌
           </p>
         )}
       </form>
