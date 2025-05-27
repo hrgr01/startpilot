@@ -8,7 +8,7 @@ const transporter = nodemailer.createTransport({
   host: "smtp-relay.brevo.com",
   port: 587,
   auth: {
-    user: "8d3879001@smtp-brevo.com", // OBS: detta ska matcha din Brevo SMTP-login, ej "info@startpilot.org"
+    user: "8d3879001@smtp-brevo.com", // Brevo SMTP-login
     pass: process.env.BREVO_SMTP_PASSWORD
   }
 });
@@ -51,38 +51,68 @@ Svar som JSON. Inkludera alla fält exakt.`;
       return res.status(500).json({ error: "Fel i GPT-4-svaret." });
     }
 
-    const faqHTML = Array.isArray(data["6. FAQ"])
-      ? data["6. FAQ"].map(f => {
-          if (typeof f === "string") return `<li>${f}</li>`;
-          return `<li><strong>${f.Fråga || f.Q}:</strong> ${f.Svar || f.A}</li>`;
-        }).join("")
-      : "";
+    const safe = (key) => data[key] || "undefined";
 
-    const adsHTML = Array.isArray(data["9. Facebook-annonser"])
-      ? data["9. Facebook-annonser"].map(ad => {
-          return `<li><strong>${ad.hook || ad.Hook}:</strong> ${ad.value || ad.Värde} <em>${ad.CTA}</em></li>`;
-        }).join("")
-      : "";
+    const renderFAQ = () => {
+      if (Array.isArray(data["6. FAQ"])) {
+        return data["6. FAQ"]
+          .map((item) => {
+            if (typeof item === "string") return `<li>${item}</li>`;
+            if (item.Fråga && item.Svar)
+              return `<li><strong>${item.Fråga}</strong>: ${item.Svar}</li>`;
+            if (item.Q && item.A)
+              return `<li><strong>${item.Q}</strong>: ${item.A}</li>`;
+            return "";
+          })
+          .join("");
+      }
+      return "<li>Inga frågor genererade.</li>";
+    };
+
+    const renderAds = () => {
+      const ads = data["9. Facebook-annonser"];
+      if (Array.isArray(ads)) {
+        return ads
+          .map(
+            (ad) =>
+              `<li><strong>${ad.hook || ad.Hook}</strong>: ${
+                ad.value || ad.Värde
+              } <em>${ad.CTA || ad.Cta || ad.cta}</em></li>`
+          )
+          .join("");
+      }
+      if (typeof ads === "object") {
+        return Object.values(ads)
+          .map(
+            (ad) =>
+              `<li><strong>${ad.hook || ad.Hook}</strong>: ${
+                ad.value || ad.Värde
+              } <em>${ad.CTA || ad.Cta || ad.cta}</em></li>`
+          )
+          .join("");
+      }
+      return "<li>Inga annonser genererade.</li>";
+    };
 
     const htmlContent = `
-      <h1>${data["2. Företagsnamn"] || "Startup"} – ${data["3. Tagline"] || ""}</h1>
-      <p><strong>Affärsidé:</strong> ${data["1. Affärsidé"]}</p>
-      <p><strong>Målgrupp:</strong> ${data["4. Målgrupp"]}</p>
-      <p><strong>Produktbeskrivning:</strong> ${data["5. Produktbeskrivning"]}</p>
-      <p><strong>FAQ:</strong><ul>${faqHTML}</ul></p>
-      <p><strong>Call-to-action:</strong> ${data["7. Call-to-action"]}</p>
-      <p><strong>E-postämnesrad:</strong> ${data["8. E-postämnesrad"]}</p>
-      <p><strong>Facebook-annonser:</strong><ul>${adsHTML}</ul></p>
-      <p><strong>Videoidé:</strong> ${data["10. En kort videobeskrivning"]}</p>
-      <p><strong>Pitchdeck:</strong> ${data["11. Text till pitchdeck"]}</p>
-      <p><strong>Produktförslag:</strong> ${data["12. Förslag på produkt att sälja + dropshippingmodell"]}</p>
+      <h1>${safe("2. Företagsnamn")} – ${safe("3. Tagline")}</h1>
+      <p><strong>Affärsidé:</strong> ${safe("1. Affärsidé")}</p>
+      <p><strong>Målgrupp:</strong> ${safe("4. Målgrupp")}</p>
+      <p><strong>Produktbeskrivning:</strong> ${safe("5. Produktbeskrivning")}</p>
+      <p><strong>FAQ:</strong><ul>${renderFAQ()}</ul></p>
+      <p><strong>Call-to-action:</strong> ${safe("7. Call-to-action")}</p>
+      <p><strong>E-postämnesrad:</strong> ${safe("8. E-postämnesrad")}</p>
+      <p><strong>Facebook-annonser:</strong><ul>${renderAds()}</ul></p>
+      <p><strong>Videoidé:</strong> ${safe("10. En kort videobeskrivning")}</p>
+      <p><strong>Pitchdeck:</strong> ${safe("11. Text till pitchdeck")}</p>
+      <p><strong>Produktförslag:</strong> ${safe("12. Förslag på produkt att sälja + dropshippingmodell")}</p>
     `;
 
     if (email) {
       await transporter.sendMail({
         from: 'Startpilot <info@startpilot.org>',
         to: email,
-        subject: `🚀 Din AI-startupidé: ${data["2. Företagsnamn"] || "Startpilot"}`,
+        subject: `🚀 Din AI-startupidé: ${safe("2. Företagsnamn")}`,
         html: htmlContent
       });
     }
@@ -90,6 +120,6 @@ Svar som JSON. Inkludera alla fält exakt.`;
     res.status(200).json({ success: true });
   } catch (error) {
     console.error("Fel i generate.js:", error);
-    res.status(500).json({ error: "Kunde inte generera eller skicka." });
+    res.status(500).json({ error: "Kunde inte generera affärspaket." });
   }
 }
