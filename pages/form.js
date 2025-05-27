@@ -1,110 +1,84 @@
-// /pages/form.js
-import { useState } from "react";
+// pages/form.js
+import { useState } from 'react';
 
-export default function FormPage() {
-  const [idea, setIdea] = useState("");
-  const [email, setEmail] = useState("");
-  const [data, setData] = useState(null);
+export default function Form() {
+  const [idea, setIdea] = useState('');
+  const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setData(null);
+
     try {
-      const res = await fetch("/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({ idea, email })
       });
-      const result = await res.json();
-      setData(result);
-    } catch (err) {
-      console.error("Fel:", err);
+
+      if (response.ok) {
+        setSubmitted(true);
+      } else {
+        alert('Något gick fel. Försök igen.');
+      }
+    } catch (error) {
+      console.error('Fel vid skick:', error);
+      alert('Kunde inte skicka formuläret.');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
-    <main className="min-h-screen bg-black text-white p-8">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-4xl font-bold mb-6 text-center">Skicka in din idé</h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            className="w-full p-4 text-black rounded"
-            type="email"
-            placeholder="Din e-postadress"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+    <div className="min-h-screen bg-black text-white flex items-center justify-center px-4">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-xl space-y-6 bg-zinc-900 p-8 rounded-2xl shadow-xl"
+      >
+        <h1 className="text-3xl font-bold text-center">🚀 Starta din AI-idé</h1>
+
+        <div>
+          <label className="block text-sm mb-1">Din affärsidé</label>
           <textarea
-            className="w-full p-4 text-black rounded"
-            rows={4}
-            placeholder="Ex: En AI som hjälper frisörer skapa Instagram-annonser"
             value={idea}
             onChange={(e) => setIdea(e.target.value)}
             required
+            placeholder="Beskriv din idé..."
+            className="w-full p-3 rounded-md bg-zinc-800 border border-zinc-700 placeholder-zinc-500"
+            rows={4}
           />
-          <button
-            type="submit"
-            className="bg-white text-black px-6 py-3 rounded font-medium hover:scale-105 transition"
-            disabled={loading}
-          >
-            {loading ? "Genererar..." : "Skicka"}
-          </button>
-        </form>
+        </div>
 
-        {data && (
-          <div className="mt-10 space-y-6">
-            <div className="bg-gray-800 p-6 rounded">
-              <h2 className="text-xl font-semibold mb-2">🚀 {data["Företagsnamn"]} – {data["Tagline"]}</h2>
-              <p className="text-gray-300 mb-2">{data["Affärsidé"]}</p>
-              <p className="text-sm text-gray-400">Målgrupp: {data["Målgrupp"]}</p>
-            </div>
+        <div>
+          <label className="block text-sm mb-1">Din e-postadress</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            placeholder="namn@email.se"
+            className="w-full p-3 rounded-md bg-zinc-800 border border-zinc-700 placeholder-zinc-500"
+          />
+        </div>
 
-            <div className="bg-gray-900 p-6 rounded">
-              <h3 className="text-lg font-bold mb-2">🛍️ Produktbeskrivning</h3>
-              <p>{data["Produktbeskrivning"]}</p>
-            </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full py-3 bg-white text-black rounded-md font-semibold hover:bg-zinc-200 transition"
+        >
+          {loading ? 'Skickar...' : 'Starta gratis'}
+        </button>
 
-            <div className="bg-gray-900 p-6 rounded">
-              <h3 className="text-lg font-bold mb-2">❓ FAQ</h3>
-              <p>{data["FAQ (3 frågor)"]}</p>
-            </div>
-
-            <div className="bg-gray-900 p-6 rounded">
-              <h3 className="text-lg font-bold mb-2">🎯 Call to Action</h3>
-              <p>{data["Call-to-action"]}</p>
-            </div>
-
-            <div className="bg-gray-900 p-6 rounded">
-              <h3 className="text-lg font-bold mb-2">📬 E-postämne</h3>
-              <p>{data["E-postämnesrad"]}</p>
-            </div>
-
-            <div className="bg-gray-900 p-6 rounded">
-              <h3 className="text-lg font-bold mb-2">📣 Annonser</h3>
-              <p>{data["3 Facebook-annonser (hook + värde + CTA)"]}</p>
-            </div>
-
-            <div className="bg-gray-900 p-6 rounded">
-              <h3 className="text-lg font-bold mb-2">🎬 Videoidé</h3>
-              <p>{data["En kort videobeskrivning"]}</p>
-            </div>
-
-            <div className="bg-gray-900 p-6 rounded">
-              <h3 className="text-lg font-bold mb-2">🧾 Pitchdeck-text</h3>
-              <p>{data["Text till pitchdeck"]}</p>
-            </div>
-
-            <div className="bg-gray-900 p-6 rounded">
-              <h3 className="text-lg font-bold mb-2">🛒 Produktförslag</h3>
-              <p>{data["Förslag på produkt att sälja + dropshippingmodell"]}</p>
-            </div>
-          </div>
+        {submitted && (
+          <p className="text-green-400 text-center font-medium">
+            ✅ Ditt AI-paket är på väg till din mail!
+          </p>
         )}
-      </div>
-    </main>
+      </form>
+    </div>
   );
 }
