@@ -1,3 +1,4 @@
+// /pages/api/generate.js
 import { OpenAI } from "openai";
 import nodemailer from "nodemailer";
 
@@ -7,84 +8,81 @@ const transporter = nodemailer.createTransport({
   host: "smtp-relay.brevo.com",
   port: 587,
   auth: {
-    user: "8d3879001@smtp-brevo.com",
+    user: "info@startpilot.org",
     pass: process.env.BREVO_SMTP_PASSWORD
   }
 });
-
-function formatFAQ(faqArray) {
-  return faqArray.map(item => {
-    if (typeof item === "string") return `- ${item}`;
-    if (typeof item === "object" && item.Q && item.A)
-      return `- <b>Fråga:</b> ${item.Q}<br><b>Svar:</b> ${item.A}`;
-    return "- [Ogiltigt FAQ-format]";
-  }).join("<br>");
-}
-
-function formatAds(ads) {
-  return ads.map(ad => {
-    if (typeof ad === "object" && ad.hook && ad.value && ad.CTA)
-      return `- <b>${ad.hook}</b><br>${ad.value}<br><i>${ad.CTA}</i>`;
-    return "- [Ogiltig annons]";
-  }).join("<br>");
-}
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
 
   const { idea, email } = req.body;
 
-  const prompt = `Du är en AI-baserad startupcoach. Kunden skrev: "${idea}".
-Generera följande som JSON med tydliga nycklar:
-1. Affärsidé
-2. Företagsnamn
-3. Tagline
-4. Målgrupp
-5. Produktbeskrivning
-6. FAQ (3 frågor, i formatet [{"Q":"fråga","A":"svar"}])
-7. Call-to-action
-8. E-postämnesrad
-9. 3 Facebook-annonser (som objekt med hook, value, CTA)
-10. En kort videobeskrivning
-11. Text till pitchdeck
-12. Förslag på produkt att sälja + dropshippingmodell`;
+  const prompt = `Du är en AI-startupcoach. Kunden skrev: "${idea}".
+Generera följande som giltig JSON:
+{
+  "businessIdea": string,
+  "companyName": string,
+  "tagline": string,
+  "targetAudience": string,
+  "productDescription": string,
+  "faq": [{"question": string, "answer": string}],
+  "callToAction": string,
+  "emailSubject": string,
+  "facebookAds": [{"hook": string, "value": string, "CTA": string}],
+  "videoIdea": string,
+  "pitch": string,
+  "productSuggestion": string
+}`;
 
   try {
-    const chatCompletion = await openai.chat.completions.create({
-      messages: [{ role: "user", content: prompt }],
-      model: "gpt-4"
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4",
+      messages: [
+        { role: "system", content: "Du svarar ENDAST med JSON" },
+        { role: "user", content: prompt }
+      ]
     });
 
-    const raw = chatCompletion.choices[0].message.content;
-    const result = JSON.parse(raw);
+    const responseText = completion.choices[0].message.content;
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (err) {
+      console.error("JSON parse error:", err);
+      return res.status(500).json({ error: "Kunde inte tolka AI-svaret" });
+    }
 
-    const body = `
-    <h2>🚀 Din AI-startupidé: ${result["2. Företagsnamn"]}</h2>
-    <h3>${result["3. Tagline"]}</h3>
-    <b>Affärsidé:</b> ${result["1. Affärsidé"]}<br><br>
-    <b>Målgrupp:</b> ${result["4. Målgrupp"]}<br><br>
-    <b>Produktbeskrivning:</b> ${result["5. Produktbeskrivning"]}<br><br>
-    <b>FAQ:</b><br>${formatFAQ(result["6. FAQ"] || [])}<br><br>
-    <b>Call-to-action:</b> ${result["7. Call-to-action"]}<br><br>
-    <b>E-postämnesrad:</b> ${result["8. E-postämnesrad"]}<br><br>
-    <b>Facebook-annonser:</b><br>${formatAds(result["9. Facebook-annonser"] || [])}<br><br>
-    <b>Videoidé:</b> ${result["10. Kort videobeskrivning"] || "– saknas –"}<br><br>
-    <b>Pitchdeck:</b> ${result["11. Text till pitchdeck"] || "–"}<br><br>
-    <b>Produktförslag:</b> ${result["12. Förslag på produkt att sälja + dropshippingmodell"] || "–"}<br><br>
-    <hr>
-    <small>Tack för att du använde Startpilot! Vi tror på din idé – nu är det dags att ta nästa steg.</small>
+    const htmlBody = `
+      <h1>🚀 Din AI-startupidé: ${data.companyName}</h1>
+      <p><strong>Affärsidé:</strong> ${data.businessIdea}</p>
+      <p><strong>Målgrupp:</strong> ${data.targetAudience}</p>
+      <p><strong>Produktbeskrivning:</strong> ${data.productDescription}</p>
+      <p><strong>FAQ:</strong><ul>
+        ${data.faq.map(f => `<li><strong>${f.question}</strong>: ${f.answer}</li>`).join('')}
+      </ul></p>
+      <p><strong>Call-to-action:</strong> ${data.callToAction}</p>
+      <p><strong>E-postämnesrad:</strong> ${data.emailSubject}</p>
+      <p><strong>Facebook-annonser:</strong><ul>
+        ${data.facebookAds.map(ad => `<li><strong>${ad.hook}</strong><br>${ad.value}<br><em>${ad.CTA}</em></li>`).join('')}
+      </ul></p>
+      <p><strong>Videoidé:</strong> ${data.videoIdea}</p>
+      <p><strong>Pitchdeck:</strong> ${data.pitch}</p>
+      <p><strong>Produktförslag:</strong> ${data.productSuggestion}</p>
+      <hr/>
+      <p style="font-style: italic;">Tack för att du använder Startpilot 🚀</p>
     `;
 
     await transporter.sendMail({
       from: "Startpilot <info@startpilot.org>",
       to: email,
-      subject: `🚀 Din AI-startupidé: ${result["2. Företagsnamn"]}`,
-      html: body
+      subject: `🚀 Din AI-startupidé: ${data.companyName}`,
+      html: htmlBody
     });
 
-    res.status(200).json({ success: true, result });
-  } catch (error) {
-    console.error("Fel i generate.js:", error);
-    res.status(500).json({ error: "Något gick fel med AI-genereringen eller e-posten." });
+    return res.status(200).json({ success: true });
+  } catch (err) {
+    console.error("Fel i generate.js:", err);
+    return res.status(500).json({ error: "Något gick fel med AI eller e-post" });
   }
 }
