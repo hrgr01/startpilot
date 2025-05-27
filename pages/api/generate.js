@@ -8,7 +8,7 @@ const transporter = nodemailer.createTransport({
   host: "smtp-relay.brevo.com",
   port: 587,
   auth: {
-    user: "8d3879001@smtp-brevo.com",
+    user: "8d3879001@smtp-brevo.com", // OBS: detta ska matcha din Brevo SMTP-login, ej "info@startpilot.org"
     pass: process.env.BREVO_SMTP_PASSWORD
   }
 });
@@ -35,8 +35,6 @@ Generera följande:
 Svar som JSON. Inkludera alla fält exakt.`;
 
   try {
-    console.log("Skickar prompt till OpenAI:", prompt);
-
     const completion = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [{ role: "user", content: prompt }],
@@ -44,7 +42,6 @@ Svar som JSON. Inkludera alla fält exakt.`;
     });
 
     const output = completion.choices[0].message.content;
-    console.log("Svar från OpenAI:", output);
 
     let data;
     try {
@@ -54,32 +51,45 @@ Svar som JSON. Inkludera alla fält exakt.`;
       return res.status(500).json({ error: "Fel i GPT-4-svaret." });
     }
 
+    const faqHTML = Array.isArray(data["6. FAQ"])
+      ? data["6. FAQ"].map(f => {
+          if (typeof f === "string") return `<li>${f}</li>`;
+          return `<li><strong>${f.Fråga || f.Q}:</strong> ${f.Svar || f.A}</li>`;
+        }).join("")
+      : "";
+
+    const adsHTML = Array.isArray(data["9. Facebook-annonser"])
+      ? data["9. Facebook-annonser"].map(ad => {
+          return `<li><strong>${ad.hook || ad.Hook}:</strong> ${ad.value || ad.Värde} <em>${ad.CTA}</em></li>`;
+        }).join("")
+      : "";
+
     const htmlContent = `
-      <h1>${data["Företagsnamn"]} – ${data["Tagline"]}</h1>
-      <p><strong>Affärsidé:</strong> ${data["Affärsidé"]}</p>
-      <p><strong>Målgrupp:</strong> ${data["Målgrupp"]}</p>
-      <p><strong>Produktbeskrivning:</strong> ${data["Produktbeskrivning"]}</p>
-      <p><strong>FAQ:</strong><ul>${(data["FAQ (3 frågor)"] || []).map(q => `<li><strong>${q.Fråga}</strong>: ${q.Svar}</li>`).join('')}</ul></p>
-      <p><strong>Call-to-action:</strong> ${data["Call-to-action"]}</p>
-      <p><strong>E-postämnesrad:</strong> ${data["E-postämnesrad"]}</p>
-      <p><strong>Facebook-annonser:</strong><ul>${(data["3 Facebook-annonser"] || []).map(ad => `<li><strong>${ad.Hook}</strong> – ${ad.Värde} (${ad.CTA})</li>`).join('')}</ul></p>
-      <p><strong>Videoidé:</strong> ${data["En kort videobeskrivning"]}</p>
-      <p><strong>Pitchdeck:</strong> ${data["Text till pitchdeck"]}</p>
-      <p><strong>Produktförslag:</strong> ${data["Förslag på produkt att sälja + dropshippingmodell"]}</p>
+      <h1>${data["2. Företagsnamn"] || "Startup"} – ${data["3. Tagline"] || ""}</h1>
+      <p><strong>Affärsidé:</strong> ${data["1. Affärsidé"]}</p>
+      <p><strong>Målgrupp:</strong> ${data["4. Målgrupp"]}</p>
+      <p><strong>Produktbeskrivning:</strong> ${data["5. Produktbeskrivning"]}</p>
+      <p><strong>FAQ:</strong><ul>${faqHTML}</ul></p>
+      <p><strong>Call-to-action:</strong> ${data["7. Call-to-action"]}</p>
+      <p><strong>E-postämnesrad:</strong> ${data["8. E-postämnesrad"]}</p>
+      <p><strong>Facebook-annonser:</strong><ul>${adsHTML}</ul></p>
+      <p><strong>Videoidé:</strong> ${data["10. En kort videobeskrivning"]}</p>
+      <p><strong>Pitchdeck:</strong> ${data["11. Text till pitchdeck"]}</p>
+      <p><strong>Produktförslag:</strong> ${data["12. Förslag på produkt att sälja + dropshippingmodell"]}</p>
     `;
 
     if (email) {
       await transporter.sendMail({
         from: 'Startpilot <info@startpilot.org>',
         to: email,
-        subject: `🚀 Din AI-startupidé: ${data["Företagsnamn"]}`,
+        subject: `🚀 Din AI-startupidé: ${data["2. Företagsnamn"] || "Startpilot"}`,
         html: htmlContent
       });
     }
 
-    res.status(200).json(data);
+    res.status(200).json({ success: true });
   } catch (error) {
     console.error("Fel i generate.js:", error);
-    res.status(500).json({ error: "Kunde inte generera affärspaket." });
+    res.status(500).json({ error: "Kunde inte generera eller skicka." });
   }
 }
