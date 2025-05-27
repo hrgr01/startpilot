@@ -1,4 +1,3 @@
-// /pages/api/generate.js
 import { OpenAI } from "openai";
 import nodemailer from "nodemailer";
 
@@ -8,7 +7,7 @@ const transporter = nodemailer.createTransport({
   host: "smtp-relay.brevo.com",
   port: 587,
   auth: {
-    user: "8d3879001@smtp-brevo.com", // Brevo SMTP-login
+    user: "8d3879001@smtp-brevo.com",
     pass: process.env.BREVO_SMTP_PASSWORD
   }
 });
@@ -38,81 +37,53 @@ Svar som JSON. Inkludera alla fält exakt.`;
     const completion = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [{ role: "user", content: prompt }],
-      temperature: 0.8
+      temperature: 0.7
     });
 
-    const output = completion.choices[0].message.content;
+    let output = completion.choices[0].message.content;
 
     let data;
     try {
       data = JSON.parse(output);
     } catch (err) {
-      console.error("Kunde inte parsa JSON:", output);
-      return res.status(500).json({ error: "Fel i GPT-4-svaret." });
+      // fallback om GPT inte svarade i JSON
+      output = output.replace(/“|”/g, '"');
+      output = output.replace(/(\w+):/g, '"$1":');
+      data = JSON.parse(`{${output.split('\n').filter(l => l.includes(':')).join(',')}}`);
     }
 
-    const safe = (key) => data[key] || "undefined";
-
-    const renderFAQ = () => {
-      if (Array.isArray(data["6. FAQ"])) {
-        return data["6. FAQ"]
-          .map((item) => {
-            if (typeof item === "string") return `<li>${item}</li>`;
-            if (item.Fråga && item.Svar)
-              return `<li><strong>${item.Fråga}</strong>: ${item.Svar}</li>`;
-            if (item.Q && item.A)
-              return `<li><strong>${item.Q}</strong>: ${item.A}</li>`;
-            return "";
-          })
-          .join("");
-      }
-      return "<li>Inga frågor genererade.</li>";
-    };
-
-    const renderAds = () => {
-      const ads = data["9. Facebook-annonser"];
-      if (Array.isArray(ads)) {
-        return ads
-          .map(
-            (ad) =>
-              `<li><strong>${ad.hook || ad.Hook}</strong>: ${
-                ad.value || ad.Värde
-              } <em>${ad.CTA || ad.Cta || ad.cta}</em></li>`
-          )
-          .join("");
-      }
-      if (typeof ads === "object") {
-        return Object.values(ads)
-          .map(
-            (ad) =>
-              `<li><strong>${ad.hook || ad.Hook}</strong>: ${
-                ad.value || ad.Värde
-              } <em>${ad.CTA || ad.Cta || ad.cta}</em></li>`
-          )
-          .join("");
-      }
-      return "<li>Inga annonser genererade.</li>";
-    };
+    const get = (key) => data[key] || "undefined";
 
     const htmlContent = `
-      <h1>${safe("2. Företagsnamn")} – ${safe("3. Tagline")}</h1>
-      <p><strong>Affärsidé:</strong> ${safe("1. Affärsidé")}</p>
-      <p><strong>Målgrupp:</strong> ${safe("4. Målgrupp")}</p>
-      <p><strong>Produktbeskrivning:</strong> ${safe("5. Produktbeskrivning")}</p>
-      <p><strong>FAQ:</strong><ul>${renderFAQ()}</ul></p>
-      <p><strong>Call-to-action:</strong> ${safe("7. Call-to-action")}</p>
-      <p><strong>E-postämnesrad:</strong> ${safe("8. E-postämnesrad")}</p>
-      <p><strong>Facebook-annonser:</strong><ul>${renderAds()}</ul></p>
-      <p><strong>Videoidé:</strong> ${safe("10. En kort videobeskrivning")}</p>
-      <p><strong>Pitchdeck:</strong> ${safe("11. Text till pitchdeck")}</p>
-      <p><strong>Produktförslag:</strong> ${safe("12. Förslag på produkt att sälja + dropshippingmodell")}</p>
+      <h1>${get("2. Företagsnamn")} – ${get("3. Tagline")}</h1>
+      <p><strong>Affärsidé:</strong> ${get("1. Affärsidé")}</p>
+      <p><strong>Målgrupp:</strong> ${get("4. Målgrupp")}</p>
+      <p><strong>Produktbeskrivning:</strong> ${get("5. Produktbeskrivning")}</p>
+      <p><strong>FAQ:</strong><ul>${
+        (Array.isArray(data["6. FAQ"]) 
+          ? data["6. FAQ"].map(q => `<li><strong>${q.Fråga || q.Q}</strong>: ${q.Svar || q.A}</li>`) 
+          : [])
+          .join("")
+      }</ul></p>
+      <p><strong>Call-to-action:</strong> ${get("7. Call-to-action")}</p>
+      <p><strong>E-postämnesrad:</strong> ${get("8. E-postämnesrad")}</p>
+      <p><strong>Facebook-annonser:</strong><ul>${
+        (Array.isArray(data["9. Facebook-annonser"]) 
+          ? data["9. Facebook-annonser"].map(ad => 
+              `<li><strong>${ad.hook || ad.Hook}</strong> – ${ad.value || ad.Värde || ad.värde} (${ad.CTA})</li>`)
+          : [])
+          .join("")
+      }</ul></p>
+      <p><strong>Videoidé:</strong> ${get("10. En kort videobeskrivning")}</p>
+      <p><strong>Pitchdeck:</strong> ${get("11. Text till pitchdeck")}</p>
+      <p><strong>Produktförslag:</strong> ${get("12. Förslag på produkt att sälja + dropshippingmodell")}</p>
     `;
 
     if (email) {
       await transporter.sendMail({
         from: 'Startpilot <info@startpilot.org>',
         to: email,
-        subject: `🚀 Din AI-startupidé: ${safe("2. Företagsnamn")}`,
+        subject: `🚀 Din AI-startupidé: ${get("2. Företagsnamn")}`,
         html: htmlContent
       });
     }
