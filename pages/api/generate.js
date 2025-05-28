@@ -1,14 +1,20 @@
 // /pages/api/generate.js
 import { OpenAI } from "openai";
 import nodemailer from "nodemailer";
+import { createClient } from "@supabase/supabase-js";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+);
 
 const transporter = nodemailer.createTransport({
   host: "smtp-relay.brevo.com",
   port: 587,
   auth: {
-    user: "8d3879001@smtp-brevo.com",
+    user: "info@startpilot.org",
     pass: process.env.BREVO_SMTP_PASSWORD
   }
 });
@@ -19,70 +25,55 @@ export default async function handler(req, res) {
   const { idea, email } = req.body;
 
   const prompt = `Du är en AI-startupcoach. Kunden skrev: "${idea}".
-Generera följande som giltig JSON:
-{
-  "businessIdea": string,
-  "companyName": string,
-  "tagline": string,
-  "targetAudience": string,
-  "productDescription": string,
-  "faq": [{"question": string, "answer": string}],
-  "callToAction": string,
-  "emailSubject": string,
-  "facebookAds": [{"hook": string, "value": string, "CTA": string}],
-  "videoIdea": string,
-  "pitch": string,
-  "productSuggestion": string
-}`;
+Generera:
+1. Affärsidé
+2. Företagsnamn
+3. Tagline
+4. Målgrupp
+5. Produktbeskrivning
+6. FAQ (3 frågor)
+7. Call-to-action
+8. E-postämnesrad
+9. 3 Facebook-annonser (hook + värde + CTA)
+10. En kort videobeskrivning`;
 
   try {
     const completion = await openai.chat.completions.create({
       model: "gpt-4",
-      messages: [
-        { role: "system", content: "Du svarar ENDAST med JSON" },
-        { role: "user", content: prompt }
-      ]
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.8
     });
 
-    const responseText = completion.choices[0].message.content;
-    let data;
-    try {
-      data = JSON.parse(responseText);
-    } catch (err) {
-      console.error("JSON parse error:", err);
-      return res.status(500).json({ error: "Kunde inte tolka AI-svaret" });
+    const content = completion.choices[0].message.content;
+
+    // 💾 Spara till Supabase
+    const { error } = await supabase.from("user_data").insert([
+      {
+        email,
+        idea,
+        ai_output: content,
+        store_link: "",
+        pitch_link: "",
+        video_link: "",
+        email_status: "Ej skickat"
+      }
+    ]);
+
+    if (error) {
+      console.error("Supabase error:", error.message);
     }
 
-    const htmlBody = `
-      <h1>🚀 Din AI-startupidé: ${data.companyName}</h1>
-      <p><strong>Affärsidé:</strong> ${data.businessIdea}</p>
-      <p><strong>Målgrupp:</strong> ${data.targetAudience}</p>
-      <p><strong>Produktbeskrivning:</strong> ${data.productDescription}</p>
-      <p><strong>FAQ:</strong><ul>
-        ${data.faq.map(f => `<li><strong>${f.question}</strong>: ${f.answer}</li>`).join('')}
-      </ul></p>
-      <p><strong>Call-to-action:</strong> ${data.callToAction}</p>
-      <p><strong>E-postämnesrad:</strong> ${data.emailSubject}</p>
-      <p><strong>Facebook-annonser:</strong><ul>
-        ${data.facebookAds.map(ad => `<li><strong>${ad.hook}</strong><br>${ad.value}<br><em>${ad.CTA}</em></li>`).join('')}
-      </ul></p>
-      <p><strong>Videoidé:</strong> ${data.videoIdea}</p>
-      <p><strong>Pitchdeck:</strong> ${data.pitch}</p>
-      <p><strong>Produktförslag:</strong> ${data.productSuggestion}</p>
-      <hr/>
-      <p style="font-style: italic;">Tack för att du använder Startpilot 🚀</p>
-    `;
-
+    // 📧 Skicka mejl till användaren
     await transporter.sendMail({
-      from: "Startpilot <info@startpilot.org>",
+      from: "info@startpilot.org",
       to: email,
-      subject: `🚀 Din AI-startupidé: ${data.companyName}`,
-      html: htmlBody
+      subject: "Ditt AI-startpaket från Startpilot 🚀",
+      text: content
     });
 
     return res.status(200).json({ success: true });
   } catch (err) {
-    console.error("Fel i generate.js:", err);
-    return res.status(500).json({ error: "Något gick fel med AI eller e-post" });
+    console.error("ERROR:", err);
+    return res.status(500).json({ error: "Något gick fel" });
   }
 }
