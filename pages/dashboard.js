@@ -1,57 +1,27 @@
 // /pages/dashboard.js
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { createClient } from "@supabase/supabase-js";
 import { motion } from "framer-motion";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
+import supabase from "../utils/supabase";
 
 export default function Dashboard() {
-  const [userData, setUserData] = useState(null);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    const fetchData = async () => {
-      const {
-        data: { session },
-        error
-      } = await supabase.auth.getSession();
-
-      if (!session) {
-        router.push("/login");
-        return;
+    const getSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) router.push("/login");
+      else {
+        setUser(session.user);
+        setLoading(false);
       }
-
-      const { data, error: fetchError } = await supabase
-        .from("user_data")
-        .select("*")
-        .eq("email", session.user.email)
-        .single();
-
-      if (fetchError || !data) {
-        console.error("Kunde inte hämta användardata", fetchError);
-        router.push("/form");
-        return;
-      }
-
-      setUserData(data);
-      setLoading(false);
     };
-
-    fetchData();
+    getSession();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-black text-white">
-        <p>Laddar din dashboard...</p>
-      </div>
-    );
-  }
+  if (loading) return <p className="text-white text-center mt-10">🔐 Laddar dashboard...</p>;
 
   return (
     <main className="min-h-screen bg-black text-white px-6 py-16">
@@ -62,42 +32,11 @@ export default function Dashboard() {
           transition={{ duration: 0.6 }}
           className="text-4xl font-bold text-center mb-10"
         >
-          🧠 Din personliga Startpilot Dashboard
+          🧠 Välkommen {user.email} till din Startpilot Dashboard
         </motion.h1>
 
-        <div className="bg-white text-black p-6 rounded-xl mb-6">
-          <h2 className="text-2xl font-bold mb-2">Affärsidé</h2>
-          <p className="text-lg">{userData.idea}</p>
-
-          <div className="mt-4 flex flex-col gap-3">
-            <a
-              href={userData.store_link}
-              target="_blank"
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-center"
-            >
-              🚀 Gå till din Shopify-butik
-            </a>
-            <a
-              href={userData.pitch_link}
-              target="_blank"
-              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-center"
-            >
-              🎯 Visa pitchdeck
-            </a>
-            <a
-              href={userData.video_link}
-              target="_blank"
-              className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 text-center"
-            >
-              🎥 Se AI-video
-            </a>
-          </div>
-        </div>
-
-        <div className="bg-white text-black p-6 rounded-xl">
-          <h3 className="text-xl font-bold mb-4">📬 E-postflöde</h3>
-          <p>Status: {userData.email_status || "Ej påbörjat"}</p>
-        </div>
+        {/* Resten av din dashboard här, t.ex. affärsidé, knappar etc. */}
+        {/* ... */}
       </div>
     </main>
   );
