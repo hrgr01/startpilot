@@ -1,5 +1,6 @@
 // /pages/form.js
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function FormPage() {
   const [idea, setIdea] = useState("");
@@ -21,51 +22,78 @@ export default function FormPage() {
 
   return (
     <div className="min-h-screen bg-[#0f172a] text-white flex flex-col items-center justify-center px-6 py-12">
-      <h1 className="text-3xl md:text-5xl font-bold mb-6 text-center">
-        🚀 Skapa din AI-affärsidé med Startpilot
-      </h1>
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-xl bg-[#1e293b] p-8 rounded-2xl shadow-lg"
-      >
-        <label className="block mb-4">
-          <span className="text-sm font-medium">Din affärsidé</span>
-          <textarea
-            required
-            value={idea}
-            onChange={(e) => setIdea(e.target.value)}
-            placeholder="T.ex. massagebokning-app för stressade människor"
-            className="mt-1 w-full p-4 rounded-lg bg-[#0f172a] border border-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-400"
-            rows={5}
-          />
-        </label>
+      <AnimatePresence>
+        {!sent && (
+          <motion.form
+            key="form"
+            onSubmit={handleSubmit}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5 }}
+            className="w-full max-w-xl bg-[#1e293b] p-8 rounded-2xl shadow-lg"
+          >
+            <h1 className="text-3xl md:text-5xl font-bold mb-6 text-center">
+              🚀 Skapa din AI-affärsidé med Startpilot
+            </h1>
 
-        <label className="block mb-6">
-          <span className="text-sm font-medium">Din e-post</span>
-          <input
-            required
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="du@email.com"
-            className="mt-1 w-full p-4 rounded-lg bg-[#0f172a] border border-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-400"
-          />
-        </label>
+            <label className="block mb-4">
+              <span className="text-sm font-medium">Din affärsidé</span>
+              <textarea
+                required
+                value={idea}
+                onChange={(e) => setIdea(e.target.value)}
+                placeholder="T.ex. massagebokning-app för stressade människor"
+                className="mt-1 w-full p-4 rounded-lg bg-[#0f172a] border border-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-400"
+                rows={5}
+              />
+            </label>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full py-4 rounded-xl bg-teal-500 hover:bg-teal-600 transition text-white text-lg font-semibold"
-        >
-          {loading ? "Skickar..." : "Skapa AI-paket"}
-        </button>
+            <label className="block mb-6">
+              <span className="text-sm font-medium">Din e-post</span>
+              <input
+                required
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="du@email.com"
+                className="mt-1 w-full p-4 rounded-lg bg-[#0f172a] border border-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-400"
+              />
+            </label>
 
-        {sent && (
-          <p className="mt-6 text-center text-green-400 text-md font-medium">
-            ✅ Tack för att du använder Startpilot! Ditt AI-paket är skickat 💌
-          </p>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-4 rounded-xl bg-teal-500 hover:bg-teal-600 transition text-white text-lg font-semibold"
+            >
+              {loading ? "Skickar..." : "Skapa AI-paket"}
+            </button>
+          </motion.form>
         )}
-      </form>
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {sent && (
+          <motion.div
+            key="thanks"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.6 }}
+            className="text-center max-w-lg mt-10"
+          >
+            <h2 className="text-2xl font-bold text-green-400 mb-4">
+              ✅ Tack för att du använder Startpilot!
+            </h2>
+            <p className="text-lg text-gray-300">
+              Ditt personliga AI-paket är skickat till <span className="font-semibold text-white">{email}</span> 💌
+            </p>
+            <p className="mt-4 text-sm text-gray-500 italic">
+              Vi tror på din idé. Vi är bara i början. 💼
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
