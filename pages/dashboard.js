@@ -1,13 +1,8 @@
 // /pages/dashboard.js
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { createClient } from "@supabase/supabase-js";
 import { motion } from "framer-motion";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
+import supabase from "../utils/supabase";
 
 export default function Dashboard() {
   const [userData, setUserData] = useState(null);
@@ -15,13 +10,13 @@ export default function Dashboard() {
   const router = useRouter();
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchUserData = async () => {
       const {
         data: { session },
         error
       } = await supabase.auth.getSession();
 
-      if (!session) {
+      if (!session || !session.user?.email) {
         router.push("/login");
         return;
       }
@@ -33,7 +28,7 @@ export default function Dashboard() {
         .single();
 
       if (fetchError || !data) {
-        console.error("Kunde inte hämta användardata", fetchError);
+        console.error("Ingen användardata hittades", fetchError);
         router.push("/form");
         return;
       }
@@ -42,13 +37,8 @@ export default function Dashboard() {
       setLoading(false);
     };
 
-    fetchData();
+    fetchUserData();
   }, []);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push("/login");
-  };
 
   if (loading) {
     return (
@@ -71,26 +61,26 @@ export default function Dashboard() {
         </motion.h1>
 
         <div className="bg-white text-black p-6 rounded-xl mb-6">
-          <h2 className="text-2xl font-bold mb-2">Affärside</h2>
+          <h2 className="text-2xl font-bold mb-2">Affärsidé</h2>
           <p className="text-lg">{userData.idea}</p>
 
           <div className="mt-4 flex flex-col gap-3">
             <a
-              href={userData.store_link}
+              href={userData.store_link || "#"}
               target="_blank"
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-center"
             >
               🚀 Gå till din Shopify-butik
             </a>
             <a
-              href={userData.pitch_link}
+              href={userData.pitch_link || "#"}
               target="_blank"
               className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-center"
             >
               🎯 Visa pitchdeck
             </a>
             <a
-              href={userData.video_link}
+              href={userData.video_link || "#"}
               target="_blank"
               className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 text-center"
             >
@@ -99,27 +89,9 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="bg-white text-black p-6 rounded-xl mb-6">
+        <div className="bg-white text-black p-6 rounded-xl">
           <h3 className="text-xl font-bold mb-4">📬 E-postflöde</h3>
           <p>Status: {userData.email_status || "Ej påbörjat"}</p>
-        </div>
-
-        <div className="bg-white text-black p-6 rounded-xl mb-6">
-          <h3 className="text-xl font-bold mb-4">✨ AI-förslag</h3>
-          <ul className="list-disc pl-5 space-y-2">
-            {(userData.weekly_suggestions || []).map((suggestion, index) => (
-              <li key={index}>{suggestion}</li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="text-center mt-10">
-          <button
-            onClick={handleLogout}
-            className="px-6 py-3 bg-red-600 rounded text-white font-semibold hover:bg-red-700"
-          >
-            Logga ut
-          </button>
         </div>
       </div>
     </main>
