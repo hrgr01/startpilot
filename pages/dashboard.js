@@ -12,7 +12,6 @@ const supabase = createClient(
 export default function Dashboard() {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [weeklySuggestions, setWeeklySuggestions] = useState([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -22,7 +21,7 @@ export default function Dashboard() {
         error
       } = await supabase.auth.getSession();
 
-      if (!session?.user?.email) {
+      if (!session) {
         router.push("/login");
         return;
       }
@@ -40,20 +39,6 @@ export default function Dashboard() {
       }
 
       setUserData(data);
-      setWeeklySuggestions([
-        {
-          title: "AI-genererade anslagstavlor för kontor",
-          shopifyProduct: "anslagstavla"
-        },
-        {
-          title: "Print-on-demand posters med motiverande citat",
-          shopifyProduct: "poster"
-        },
-        {
-          title: "Smarta kalendrar för ADHD-användare",
-          shopifyProduct: "kalender"
-        }
-      ]);
       setLoading(false);
     };
 
@@ -63,26 +48,6 @@ export default function Dashboard() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push("/login");
-  };
-
-  const handleCreateStore = async (product) => {
-    const res = await fetch("/api/create-ai-store", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ idea: product })
-    });
-    const data = await res.json();
-    if (data?.url) window.open(data.url, "_blank");
-  };
-
-  const handlePitchAndMarketing = async () => {
-    const res = await fetch("/api/generate-assets", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ idea: userData.idea })
-    });
-    const data = await res.json();
-    if (data?.success) alert("✅ Pitch och marknadsföring skapad!");
   };
 
   if (loading) {
@@ -105,15 +70,8 @@ export default function Dashboard() {
           🧠 Din personliga Startpilot Dashboard
         </motion.h1>
 
-        <button
-          onClick={handleLogout}
-          className="absolute top-4 right-4 px-4 py-2 bg-red-500 hover:bg-red-600 rounded text-white"
-        >
-          Logga ut
-        </button>
-
         <div className="bg-white text-black p-6 rounded-xl mb-6">
-          <h2 className="text-2xl font-bold mb-2">Affärsidé</h2>
+          <h2 className="text-2xl font-bold mb-2">Affärside</h2>
           <p className="text-lg">{userData.idea}</p>
 
           <div className="mt-4 flex flex-col gap-3">
@@ -147,30 +105,20 @@ export default function Dashboard() {
         </div>
 
         <div className="bg-white text-black p-6 rounded-xl mb-6">
-          <h3 className="text-xl font-bold mb-4">✨ AI-förslag för nya produkter</h3>
-          <ul className="list-disc pl-5 space-y-3">
-            {weeklySuggestions.map((item, i) => (
-              <li key={i}>
-                <span className="font-medium">{item.title}</span>
-                <br />
-                <button
-                  onClick={() => handleCreateStore(item.shopifyProduct)}
-                  className="text-blue-500 underline mt-1"
-                >
-                  ➕ Skapa produkt
-                </button>
-              </li>
+          <h3 className="text-xl font-bold mb-4">✨ AI-förslag</h3>
+          <ul className="list-disc pl-5 space-y-2">
+            {(userData.weekly_suggestions || []).map((suggestion, index) => (
+              <li key={index}>{suggestion}</li>
             ))}
           </ul>
         </div>
 
-        <div className="bg-white text-black p-6 rounded-xl">
-          <h3 className="text-xl font-bold mb-4">🎯 Skapa marknadsföringspaket</h3>
+        <div className="text-center mt-10">
           <button
-            onClick={handlePitchAndMarketing}
-            className="px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700"
+            onClick={handleLogout}
+            className="px-6 py-3 bg-red-600 rounded text-white font-semibold hover:bg-red-700"
           >
-            Generera pitch + video + e-post
+            Logga ut
           </button>
         </div>
       </div>
