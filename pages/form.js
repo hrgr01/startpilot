@@ -6,37 +6,33 @@ export default function FormPage() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [aiResult, setAiResult] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
-    // Skicka till din backend
     const res = await fetch("/api/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ idea, email }),
     });
 
-    // Också skicka till Make.com webhook (för Google Sheet loggning)
-    await fetch("https://hook.integromat.com/DITT-WEBHOOK-ID", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ idea, email }),
-    });
-
+    const data = await res.json();
     setLoading(false);
-    if (res.ok) setSent(true);
+    if (res.ok) {
+      setSent(true);
+      setAiResult(data.result); // Visa resultat live
+    }
   };
 
   return (
     <div className="min-h-screen bg-[#0f172a] text-white flex flex-col items-center justify-center px-6 py-12">
-      <h1 className="text-3xl md:text-5xl font-bold mb-6 text-center">
+      <h1 className="text-3xl md:text-5xl font-bold mb-6 text-center animate-fade-in">
         🚀 Skapa din AI-affärsidé med Startpilot
       </h1>
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-xl bg-[#1e293b] p-8 rounded-2xl shadow-lg"
+        className="w-full max-w-xl bg-[#1e293b] p-8 rounded-2xl shadow-lg animate-slide-up"
       >
         <label className="block mb-4">
           <span className="text-sm font-medium">Din affärsidé</span>
@@ -70,24 +66,19 @@ export default function FormPage() {
           {loading ? "Skickar..." : "Skapa AI-paket"}
         </button>
 
-        {loading && (
-          <div className="flex justify-center mt-4">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-teal-400"></div>
-          </div>
-        )}
-
         {sent && (
-          <p className="mt-6 text-center text-green-400 text-md font-medium">
+          <p className="mt-6 text-center text-green-400 text-md font-medium animate-fade-in">
             ✅ Tack för att du använder Startpilot! Ditt AI-paket är skickat 💌
           </p>
         )}
       </form>
 
-      <div className="mt-12 max-w-xl text-center text-gray-400 text-sm space-y-4">
-        <p>⭐️ \"Jag skickade in min idé och fick tillbaka en komplett AI-plan – magiskt!\"</p>
-        <p>🔥 \"Startpilot hjälpte mig starta mitt bolag på 2 dagar!\"</p>
-        <p>🚀 \"Bästa AI-verktyget jag testat. Snyggt, enkelt, kraftfullt.\"</p>
-      </div>
+      {aiResult && (
+        <div className="mt-12 w-full max-w-3xl bg-[#1e293b] p-6 rounded-xl shadow-xl animate-fade-in">
+          <h2 className="text-xl font-bold mb-4 text-teal-300">🎁 Ditt AI-paket:</h2>
+          <pre className="whitespace-pre-wrap text-sm text-gray-300">{aiResult}</pre>
+        </div>
+      )}
     </div>
   );
 }
