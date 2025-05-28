@@ -1,12 +1,12 @@
 // /pages/form.js
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 export default function FormPage() {
   const [idea, setIdea] = useState("");
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [aiResult, setAiResult] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -16,23 +16,27 @@ export default function FormPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ idea, email }),
     });
-
-    const data = await res.json();
     setLoading(false);
-    if (res.ok) {
-      setSent(true);
-      setAiResult(data.result); // Visa resultat live
-    }
+    if (res.ok) setSent(true);
   };
 
   return (
     <div className="min-h-screen bg-[#0f172a] text-white flex flex-col items-center justify-center px-6 py-12">
-      <h1 className="text-3xl md:text-5xl font-bold mb-6 text-center animate-fade-in">
+      <motion.h1
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="text-3xl md:text-5xl font-bold mb-6 text-center"
+      >
         🚀 Skapa din AI-affärsidé med Startpilot
-      </h1>
-      <form
+      </motion.h1>
+
+      <motion.form
         onSubmit={handleSubmit}
-        className="w-full max-w-xl bg-[#1e293b] p-8 rounded-2xl shadow-lg animate-slide-up"
+        className="w-full max-w-xl bg-[#1e293b] p-8 rounded-2xl shadow-lg"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3, duration: 0.6 }}
       >
         <label className="block mb-4">
           <span className="text-sm font-medium">Din affärsidé</span>
@@ -58,27 +62,26 @@ export default function FormPage() {
           />
         </label>
 
-        <button
+        <motion.button
           type="submit"
           disabled={loading}
+          whileTap={{ scale: 0.95 }}
           className="w-full py-4 rounded-xl bg-teal-500 hover:bg-teal-600 transition text-white text-lg font-semibold"
         >
           {loading ? "Skickar..." : "Skapa AI-paket"}
-        </button>
+        </motion.button>
 
         {sent && (
-          <p className="mt-6 text-center text-green-400 text-md font-medium animate-fade-in">
+          <motion.p
+            className="mt-6 text-center text-green-400 text-md font-medium"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
             ✅ Tack för att du använder Startpilot! Ditt AI-paket är skickat 💌
-          </p>
+          </motion.p>
         )}
-      </form>
-
-      {aiResult && (
-        <div className="mt-12 w-full max-w-3xl bg-[#1e293b] p-6 rounded-xl shadow-xl animate-fade-in">
-          <h2 className="text-xl font-bold mb-4 text-teal-300">🎁 Ditt AI-paket:</h2>
-          <pre className="whitespace-pre-wrap text-sm text-gray-300">{aiResult}</pre>
-        </div>
-      )}
+      </motion.form>
     </div>
   );
 }
