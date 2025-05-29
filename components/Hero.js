@@ -22,12 +22,18 @@ export default function Hero() {
 
   useEffect(() => {
     const getSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (session?.user?.email) {
-        setUserEmail(session.user.email);
-        fetchUserIdeas(session.user.email);
+      try {
+        const {
+          data: { session },
+          error
+        } = await supabase.auth.getSession();
+        if (error) throw error;
+        if (session?.user?.email) {
+          setUserEmail(session.user.email);
+          fetchUserIdeas(session.user.email);
+        }
+      } catch (err) {
+        console.error("Session error:", err.message);
       }
     };
     getSession();
@@ -42,6 +48,8 @@ export default function Hero() {
 
     if (!error && data) {
       setUserIdeas(data);
+    } else {
+      console.error("Error fetching ideas:", error?.message);
     }
   };
 
@@ -89,15 +97,15 @@ export default function Hero() {
         >
           Skriv in din idé så bygger Startpilot ett komplett affärspaket på några sekunder. Allt skickas till din mejl – 100 % gratis.
         </motion.p>
-        <motion.div
+        <motion.button
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.4, duration: 0.6 }}
-          className="mt-10 inline-block px-8 py-4 bg-teal-500 hover:bg-teal-600 text-white text-lg rounded-xl shadow-lg cursor-pointer"
+          className="mt-10 px-8 py-4 bg-teal-500 hover:bg-teal-600 text-white text-lg rounded-xl shadow-lg"
           onClick={handleClick}
         >
           Kom igång nu
-        </motion.div>
+        </motion.button>
       </div>
 
       <div className="mt-16 max-w-3xl mx-auto text-left">
@@ -120,7 +128,7 @@ export default function Hero() {
             disabled={loading || !question.trim()}
           >
             {loading ? (
-              <span className="animate-ping inline-block w-3 h-3 bg-white rounded-full"></span>
+              <span className="animate-spin inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
             ) : (
               "Ställ fråga"
             )}
