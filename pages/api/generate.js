@@ -1,20 +1,15 @@
 // /pages/api/generate.js
 import { OpenAI } from "openai";
 import nodemailer from "nodemailer";
-import { createClient } from "@supabase/supabase-js";
+import supabase from "../../utils/supabase";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
 
 const transporter = nodemailer.createTransport({
   host: "smtp-relay.brevo.com",
   port: 587,
   auth: {
-    user: "info@startpilot.org",
+    user: "8d3879001@smtp-brevo.com",
     pass: process.env.BREVO_SMTP_PASSWORD
   }
 });
@@ -24,8 +19,8 @@ export default async function handler(req, res) {
 
   const { idea, email } = req.body;
 
-  const prompt = `Du är en AI-startupcoach. Kunden skrev: "${idea}".
-Generera:
+  const prompt = `Du är en AI-baserad startupcoach. Kunden skrev: "${idea}".
+Generera följande:
 1. Affärsidé
 2. Företagsnamn
 3. Tagline
@@ -37,43 +32,33 @@ Generera:
 9. 3 Facebook-annonser (hook + värde + CTA)
 10. En kort videobeskrivning`;
 
-  try {
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4",
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.8
-    });
+  const completion = await openai.chat.completions.create({
+    messages: [{ role: "user", content: prompt }],
+    model: "gpt-4"
+  });
 
-    const content = completion.choices[0].message.content;
+  const content = completion.choices[0].message.content;
 
-    // 💾 Spara till Supabase
-    const { error } = await supabase.from("user_data").insert([
-      {
-        email,
-        idea,
-        ai_output: content,
-        store_link: "",
-        pitch_link: "",
-        video_link: "",
-        email_status: "Ej skickat"
-      }
-    ]);
+  await transporter.sendMail({
+    from: "Startpilot <info@startpilot.org>",
+    to: email,
+    subject: "Ditt AI-paket från Startpilot",
+    text: content
+  });
 
-    if (error) {
-      console.error("Supabase error:", error.message);
-    }
+  // Låtsasgenererade resurser - byt mot riktiga URL:er senare
+  const storeLink = "https://shopify.com/startpilot-demo";
+  const pitchLink = "/pitch/startpilot-pitch.pdf";
+  const videoLink = "/video/ai-video-demo.mp4";
 
-    // 📧 Skicka mejl till användaren
-    await transporter.sendMail({
-      from: "info@startpilot.org",
-      to: email,
-      subject: "Ditt AI-startpaket från Startpilot 🚀",
-      text: content
-    });
+  await supabase.from("user_data").insert({
+    email,
+    idea,
+    store_link: storeLink,
+    pitch_link: pitchLink,
+    video_link: videoLink,
+    email_status: "Utskickat"
+  });
 
-    return res.status(200).json({ success: true });
-  } catch (err) {
-    console.error("ERROR:", err);
-    return res.status(500).json({ error: "Något gick fel" });
-  }
+  res.status(200).json({ success: true });
 }
