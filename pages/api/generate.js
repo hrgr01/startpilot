@@ -14,12 +14,8 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export default async function handler(req, res) {
-  if (req.method !== "POST") return res.status(405).end();
-
-  const { idea, email } = req.body;
-
-  const prompt = `Du är en AI-baserad startupcoach. Kunden skrev: "${idea}".
+// 🔧 Separera prompt för bättre hantering
+const buildPrompt = (idea) => `Du är en AI-baserad startupcoach. Kunden skrev: "${idea}".
 Generera följande:
 1. Affärsidé
 2. Företagsnamn
@@ -35,39 +31,43 @@ Generera följande:
 12. En unik AI-produktfunktion
 13. Ett communityförslag (engagerande element)`;
 
+export default async function handler(req, res) {
+  if (req.method !== "POST") return res.status(405).end();
+
+  const { idea, email } = req.body;
+
   try {
     const completion = await openai.chat.completions.create({
       model: "gpt-4",
-      messages: [{ role: "user", content: prompt }],
+      messages: [{ role: "user", content: buildPrompt(idea) }],
     });
 
     const content = completion.choices[0].message.content;
 
-    const nameMatch = content.match(/Företagsnamn:\s*(.*)/);
-    const taglineMatch = content.match(/Tagline:\s*(.*)/);
-    const targetMatch = content.match(/Målgrupp:\s*(.*)/);
-    const productMatch = content.match(/Produktbeskrivning:\s*(.*)/);
-    const pitchMatch = content.match(/Pitchdeck.*?:\s*(https?:\/\/\S+)/);
-    const videoMatch = content.match(/Videobeskrivning.*?:\s*(https?:\/\/\S+)/);
-    const storeMatch = content.match(/Butik.*?:\s*(https?:\/\/\S+)/);
-    const emailStatus = "Genererat";
+    // 🔄 Strukturera output i JSON-format istället för regex
+    // Men för nu, använd regex som fallback
+    const extract = (label) => {
+      const match = content.match(new RegExp(`${label}:\\s*(.*)`));
+      return match ? match[1] : null;
+    };
 
     const parsedData = {
       email,
       idea,
       result: content,
-      name: nameMatch ? nameMatch[1] : null,
-      tagline: taglineMatch ? taglineMatch[1] : null,
-      target: targetMatch ? targetMatch[1] : null,
-      product: productMatch ? productMatch[1] : null,
-      pitch_link: pitchMatch ? pitchMatch[1] : null,
-      video_link: videoMatch ? videoMatch[1] : null,
-      store_link: storeMatch ? storeMatch[1] : null,
-      email_status: emailStatus,
+      name: extract("Företagsnamn"),
+      tagline: extract("Tagline"),
+      target: extract("Målgrupp"),
+      product: extract("Produktbeskrivning"),
+      pitch_link: extract("Pitchdeck.*?"),
+      video_link: extract("Videobeskrivning.*?"),
+      store_link: extract("Butik.*?"),
+      email_status: "Genererat",
     };
 
-    // 🧠 Spara användardata i databasen
-    await supabase.from("user_data").insert([parsedData]);
+    // 🧠 Robust felhantering vid databasinsättning
+    const { error: dbError } = await supabase.from("user_data").insert([parsedData]);
+    if (dbError) throw new Error("Databasfel: " + dbError.message);
 
     // ✉️ Skicka e-post till användaren
     await transporter.sendMail({
