@@ -40,7 +40,22 @@ Generera följande:
 
     const content = completion.choices[0].message.content;
 
-    await supabase.from("user_data").insert([{ email, idea, result: content }]);
+    // Parse GPT output to structured values (simple heuristic)
+    const nameMatch = content.match(/Företagsnamn:\s*(.*)/);
+    const pitchMatch = content.match(/Pitchdeck.*?:\s*(https?:\/\/\S+)/);
+    const videoMatch = content.match(/Videobeskrivning.*?:\s*(https?:\/\/\S+)/);
+    const storeMatch = content.match(/Butik.*?:\s*(https?:\/\/\S+)/);
+
+    const parsedData = {
+      email,
+      idea,
+      result: content,
+      pitch_link: pitchMatch ? pitchMatch[1] : null,
+      video_link: videoMatch ? videoMatch[1] : null,
+      store_link: storeMatch ? storeMatch[1] : null,
+    };
+
+    await supabase.from("user_data").insert([parsedData]);
 
     await transporter.sendMail({
       from: "Startpilot <info@startpilot.org>",
