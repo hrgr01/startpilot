@@ -64,7 +64,8 @@ Generera följande:
       text: content,
     });
 
-    res.status(200).json({ success: true });
+    // Omdirigera till dashboard efter generering (svarar med redirect-url)
+    res.status(200).json({ success: true, redirectTo: "/dashboard" });
   } catch (error) {
     console.error("Fel i generate.js:", error);
     res.status(500).json({ success: false, error: error.message });
