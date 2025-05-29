@@ -8,6 +8,7 @@ export default function Home() {
   const [idea, setIdea] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e) => {
@@ -22,7 +23,8 @@ export default function Home() {
     setLoading(false);
 
     if (data.success) {
-      router.push("/dashboard");
+      setSuccess(true);
+      setTimeout(() => router.push("/dashboard"), 1500);
     } else {
       alert("Något gick fel. Försök igen.");
     }
@@ -100,6 +102,12 @@ export default function Home() {
             {loading ? "Skickar..." : "Skapa AI-paket"}
           </button>
         </form>
+
+        {success && (
+          <div className="text-center mt-10 text-green-400 text-xl animate-fade-in">
+            ✅ Ditt AI-paket genererades! Omdirigerar till din dashboard...
+          </div>
+        )}
       </div>
     </>
   );
