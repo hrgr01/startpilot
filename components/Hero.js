@@ -52,6 +52,10 @@ export default function Hero() {
     setLoading(false);
   };
 
+  const handleDashboard = () => {
+    router.push("/dashboard");
+  };
+
   return (
     <section className="bg-[#0f172a] py-20 px-6 text-white">
       <div className="max-w-5xl mx-auto text-center">
@@ -127,7 +131,7 @@ export default function Hero() {
             className="mt-10 bg-[#1e293b] p-6 rounded-xl shadow-lg text-white"
           >
             <h3 className="text-xl font-semibold mb-4">📂 Du är inloggad som {userEmail}</h3>
-            <p className="mb-2">👉 Gå till din <a href="/dashboard" className="text-teal-400 underline">dashboard</a> för att se dina AI-paket.</p>
+            <p className="mb-2">👉 Gå till din <button onClick={handleDashboard} className="text-teal-400 underline">dashboard</button> för att se dina AI-paket.</p>
             <p className="mb-2">➕ <a href="/#form" className="text-teal-400 underline">Skapa ett nytt AI-paket</a> direkt här.</p>
           </motion.div>
         )}
