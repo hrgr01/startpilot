@@ -3,7 +3,6 @@ import Hero from "../components/Hero";
 import { useState } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import supabase from "../utils/supabase";
 
 export default function Home() {
   const [idea, setIdea] = useState("");
@@ -15,28 +14,21 @@ export default function Home() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     const res = await fetch("/api/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ idea, email })
+      body: JSON.stringify({ idea, email }),
     });
+
     const data = await res.json();
-    setResult(data);
-
-    // Save to Supabase
-    await supabase.from("user_data").insert([
-      {
-        email,
-        idea,
-        store_link: data.productLink || null,
-        pitch_link: data.pitchLink || null,
-        video_link: data.videoLink || null,
-        email_status: "Skickat"
-      }
-    ]);
-
     setLoading(false);
-    router.push("/dashboard");
+
+    if (data.success) {
+      router.push("/dashboard");
+    } else {
+      alert("Något gick fel. Vänligen försök igen.");
+    }
   };
 
   return (
@@ -44,7 +36,7 @@ export default function Home() {
       <Hero />
       <div className="bg-[#0f172a] min-h-screen text-white px-6 py-12">
         <Head>
-          <title>Startpilot – Skapa din AI-affärsidé</title>
+          <title>Startpilot – Skapa din AI-affär</title>
         </Head>
 
         <div className="text-center mb-16 animate-fade-in">
@@ -61,7 +53,7 @@ export default function Home() {
           className="bg-[#1e293b] max-w-xl mx-auto p-8 rounded-2xl shadow-lg"
         >
           <label className="block mb-4">
-            <span className="text-sm font-medium">Din affärside</span>
+            <span className="text-sm font-medium">Din affärsidé</span>
             <textarea
               required
               value={idea}
@@ -84,32 +76,29 @@ export default function Home() {
           </label>
           <button
             disabled={loading}
-            className="w-full py-4 bg-teal-500 hover:bg-teal-600 text-white text-lg rounded-xl font-semibold"
+            className="w-full py-4 bg-teal-500 hover:bg-teal-600 text-white text-lg rounded-xl font-semibold flex justify-center items-center"
           >
             {loading ? (
-              <span className="flex items-center justify-center">
-                <svg
-                  className="animate-spin h-5 w-5 mr-3 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8v8H4z"
-                  ></path>
-                </svg>
-                Skickar...
-              </span>
+              <svg
+                className="animate-spin h-6 w-6 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v8z"
+                ></path>
+              </svg>
             ) : (
               "Skapa AI-paket"
             )}
