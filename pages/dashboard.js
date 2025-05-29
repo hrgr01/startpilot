@@ -1,8 +1,14 @@
 // /pages/dashboard.js
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { createClient } from "@supabase/supabase-js";
 import { motion } from "framer-motion";
-import supabase from "../utils/supabase";
+import { Loader2 } from "lucide-react";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+);
 
 export default function Dashboard() {
   const [userData, setUserData] = useState(null);
@@ -42,16 +48,9 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black text-white">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="text-center"
-        >
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-white mx-auto mb-4"></div>
-          <p>Laddar din personliga dashboard...</p>
-        </motion.div>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white">
+        <Loader2 className="h-10 w-10 animate-spin mb-4" />
+        <p>Laddar din dashboard...</p>
       </div>
     );
   }
@@ -68,13 +67,8 @@ export default function Dashboard() {
           🧠 Din personliga Startpilot Dashboard
         </motion.h1>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="bg-white text-black p-6 rounded-xl mb-6"
-        >
-          <h2 className="text-2xl font-bold mb-2">Affärside</h2>
+        <div className="bg-white text-black p-6 rounded-xl mb-6">
+          <h2 className="text-2xl font-bold mb-2">Affärsidé</h2>
           <p className="text-lg">{userData.idea}</p>
 
           <div className="mt-4 flex flex-col gap-3">
@@ -100,17 +94,12 @@ export default function Dashboard() {
               🎥 Se AI-video
             </a>
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.2 }}
-          className="bg-white text-black p-6 rounded-xl"
-        >
+        <div className="bg-white text-black p-6 rounded-xl">
           <h3 className="text-xl font-bold mb-4">📬 E-postflöde</h3>
           <p>Status: {userData.email_status || "Ej påbörjat"}</p>
-        </motion.div>
+        </div>
       </div>
     </main>
   );
