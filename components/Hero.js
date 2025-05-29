@@ -38,6 +38,23 @@ export default function Hero() {
           Kom igång nu
         </motion.div>
       </div>
+
+      {/* 🔥 Interaktiv AI-chattmodul (förslag) */}
+      <div className="mt-16 max-w-3xl mx-auto text-left">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.8 }}
+          className="bg-[#1e293b] p-6 rounded-xl shadow-lg"
+        >
+          <h2 className="text-2xl font-semibold mb-4">💬 Har du frågor? Vår AI-chatt hjälper dig direkt</h2>
+          <input
+            placeholder="Skriv din fråga här..."
+            className="w-full p-4 rounded-md bg-[#0f172a] border border-gray-600 text-white"
+          />
+          <div className="mt-4 text-sm text-gray-400">(Funktion kommer snart)</div>
+        </motion.div>
+      </div>
     </section>
   );
 }
