@@ -1,7 +1,7 @@
 // /pages/api/generate.js
 import { OpenAI } from "openai";
-import nodemailer from "nodemailer";
 import supabase from "../../utils/supabase";
+import nodemailer from "nodemailer";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -32,33 +32,27 @@ Generera följande:
 9. 3 Facebook-annonser (hook + värde + CTA)
 10. En kort videobeskrivning`;
 
-  const completion = await openai.chat.completions.create({
-    messages: [{ role: "user", content: prompt }],
-    model: "gpt-4"
-  });
+  try {
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4",
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.7
+    });
 
-  const content = completion.choices[0].message.content;
+    const result = completion.choices[0].message.content;
 
-  await transporter.sendMail({
-    from: "Startpilot <info@startpilot.org>",
-    to: email,
-    subject: "Ditt AI-paket från Startpilot",
-    text: content
-  });
+    await supabase.from("user_data").insert({ idea, email, result });
 
-  // Låtsasgenererade resurser - byt mot riktiga URL:er senare
-  const storeLink = "https://shopify.com/startpilot-demo";
-  const pitchLink = "/pitch/startpilot-pitch.pdf";
-  const videoLink = "/video/ai-video-demo.mp4";
+    await transporter.sendMail({
+      from: "info@startpilot.org",
+      to: email,
+      subject: "🚀 Ditt AI-startpaket från Startpilot",
+      text: result
+    });
 
-  await supabase.from("user_data").insert({
-    email,
-    idea,
-    store_link: storeLink,
-    pitch_link: pitchLink,
-    video_link: videoLink,
-    email_status: "Utskickat"
-  });
-
-  res.status(200).json({ success: true });
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error("Fel i generate:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
 }
