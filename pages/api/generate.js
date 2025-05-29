@@ -1,7 +1,7 @@
-// /pages/api/generate.js
+// pages/api/generate.js
 import { OpenAI } from "openai";
-import nodemailer from "nodemailer";
 import supabase from "../../utils/supabase";
+import nodemailer from "nodemailer";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -10,8 +10,8 @@ const transporter = nodemailer.createTransport({
   port: 587,
   auth: {
     user: "8d3879001@smtp-brevo.com",
-    pass: process.env.BREVO_SMTP_PASSWORD
-  }
+    pass: process.env.BREVO_SMTP_PASSWORD,
+  },
 });
 
 export default async function handler(req, res) {
@@ -19,7 +19,7 @@ export default async function handler(req, res) {
 
   const { idea, email } = req.body;
 
-  const prompt = `Du är en AI-startupcoach. Kunden skrev: "${idea}".
+  const prompt = `Du är en AI-baserad startupcoach. Kunden skrev: "${idea}".
 Generera följande:
 1. Affärsidé
 2. Företagsnamn
@@ -32,21 +32,26 @@ Generera följande:
 9. 3 Facebook-annonser (hook + värde + CTA)
 10. En kort videobeskrivning`;
 
-  const chatCompletion = await openai.chat.completions.create({
-    messages: [{ role: "user", content: prompt }],
-    model: "gpt-4"
-  });
+  try {
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4",
+      messages: [{ role: "user", content: prompt }],
+    });
 
-  const content = chatCompletion.choices[0].message.content;
+    const content = completion.choices[0].message.content;
 
-  await supabase.from("user_data").insert([{ email, idea, full_output: content }]);
+    await supabase.from("user_data").insert([{ email, idea, result: content }]);
 
-  await transporter.sendMail({
-    from: "info@startpilot.org",
-    to: email,
-    subject: "🚀 Ditt AI-startpaket från Startpilot",
-    text: content
-  });
+    await transporter.sendMail({
+      from: "Startpilot <info@startpilot.org>",
+      to: email,
+      subject: "🚀 Ditt AI-genererade affärspaket är klart!",
+      text: content,
+    });
 
-  res.status(200).json({ success: true, full_output: content });
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error("Fel i generate.js:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
 }
