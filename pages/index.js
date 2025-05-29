@@ -33,7 +33,7 @@ export default function Home() {
       <Hero />
       <div className="bg-[#0f172a] min-h-screen text-white px-6 py-12">
         <Head>
-          <title>Startpilot – Skapa din AI-affärsidé</title>
+          <title>Startpilot – Skapa din AI-affärside</title>
         </Head>
 
         <div className="text-center mb-16 animate-fade-in">
@@ -47,10 +47,10 @@ export default function Home() {
 
         <form
           onSubmit={handleSubmit}
-          className="bg-[#1e293b] max-w-xl mx-auto p-8 rounded-2xl shadow-lg"
+          className="bg-[#1e293b] max-w-xl mx-auto p-8 rounded-2xl shadow-lg animate-fade-in"
         >
           <label className="block mb-4">
-            <span className="text-sm font-medium">Din affärsidé</span>
+            <span className="text-sm font-medium">Din affärside</span>
             <textarea
               required
               value={idea}
