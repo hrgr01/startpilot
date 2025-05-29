@@ -29,7 +29,9 @@ Generera följande:
 10. En kort videobeskrivning
 11. En onboarding-plan med steg
 12. En unik AI-produktfunktion
-13. Ett communityförslag (engagerande element)`;
+13. Ett communityförslag (engagerande element)
+14. 3 visuella frontend-idéer (animationer, layout, färger)
+15. En AI-komponent som ska vara interaktiv på sidan (med kort förklaring)`;
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
@@ -44,8 +46,6 @@ export default async function handler(req, res) {
 
     const content = completion.choices[0].message.content;
 
-    // 🔄 Strukturera output i JSON-format istället för regex
-    // Men för nu, använd regex som fallback
     const extract = (label) => {
       const match = content.match(new RegExp(`${label}:\\s*(.*)`));
       return match ? match[1] : null;
@@ -65,11 +65,9 @@ export default async function handler(req, res) {
       email_status: "Genererat",
     };
 
-    // 🧠 Robust felhantering vid databasinsättning
     const { error: dbError } = await supabase.from("user_data").insert([parsedData]);
     if (dbError) throw new Error("Databasfel: " + dbError.message);
 
-    // ✉️ Skicka e-post till användaren
     await transporter.sendMail({
       from: "Startpilot <info@startpilot.org>",
       to: email,
@@ -77,7 +75,6 @@ export default async function handler(req, res) {
       text: content,
     });
 
-    // 🚀 Skicka användaren vidare till dashboarden
     res.status(200).json({
       success: true,
       redirectTo: "/dashboard",
