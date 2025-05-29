@@ -10,13 +10,13 @@ export default function Dashboard() {
   const router = useRouter();
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchData = async () => {
       const {
         data: { session },
         error
       } = await supabase.auth.getSession();
 
-      if (!session || !session.user?.email) {
+      if (!session) {
         router.push("/login");
         return;
       }
@@ -28,7 +28,7 @@ export default function Dashboard() {
         .single();
 
       if (fetchError || !data) {
-        console.error("Ingen användardata hittades", fetchError);
+        console.error("Kunde inte hämta användardata", fetchError);
         router.push("/form");
         return;
       }
@@ -37,7 +37,7 @@ export default function Dashboard() {
       setLoading(false);
     };
 
-    fetchUserData();
+    fetchData();
   }, []);
 
   if (loading) {
@@ -66,21 +66,21 @@ export default function Dashboard() {
 
           <div className="mt-4 flex flex-col gap-3">
             <a
-              href={userData.store_link || "#"}
+              href={userData.store_link}
               target="_blank"
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-center"
             >
               🚀 Gå till din Shopify-butik
             </a>
             <a
-              href={userData.pitch_link || "#"}
+              href={userData.pitch_link}
               target="_blank"
               className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-center"
             >
               🎯 Visa pitchdeck
             </a>
             <a
-              href={userData.video_link || "#"}
+              href={userData.video_link}
               target="_blank"
               className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 text-center"
             >
@@ -89,9 +89,29 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="bg-white text-black p-6 rounded-xl">
+        <div className="bg-white text-black p-6 rounded-xl mb-6">
           <h3 className="text-xl font-bold mb-4">📬 E-postflöde</h3>
           <p>Status: {userData.email_status || "Ej påbörjat"}</p>
+        </div>
+
+        <div className="bg-white text-black p-6 rounded-xl">
+          <h3 className="text-xl font-bold mb-4">✨ AI-förslag – Ny vecka, nya idéer</h3>
+          <ul className="list-disc pl-5 space-y-2">
+            {userData.weekly_suggestions?.map((s, i) => (
+              <li key={i}>
+                <span className="font-semibold">{s.title}</span>
+                {s.shopifyProduct && (
+                  <a
+                    href={`https://shopify.com/${s.shopifyProduct}`}
+                    target="_blank"
+                    className="ml-2 text-blue-500 underline"
+                  >
+                    ➕ Lägg till i din butik
+                  </a>
+                )}
+              </li>
+            )) || <li>Inga nya förslag än.</li>}
+          </ul>
         </div>
       </div>
     </main>
