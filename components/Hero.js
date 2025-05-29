@@ -1,5 +1,5 @@
 // components/Hero.js
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 
@@ -8,6 +8,14 @@ export default function Hero() {
   const [question, setQuestion] = useState("");
   const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(false);
+  const [debouncedQuestion, setDebouncedQuestion] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuestion(question);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [question]);
 
   const handleClick = () => {
     router.push("/#form");
@@ -20,7 +28,7 @@ export default function Hero() {
       const res = await fetch("/api/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question })
+        body: JSON.stringify({ question: debouncedQuestion })
       });
       const data = await res.json();
       setResponse(data.answer);
@@ -60,7 +68,7 @@ export default function Hero() {
         </motion.div>
       </div>
 
-      {/* 🔥 Interaktiv AI-chattmodul (aktiv version) */}
+      {/* 🔥 Interaktiv AI-chattmodul (förbättrad) */}
       <div className="mt-16 max-w-3xl mx-auto text-left">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -73,15 +81,15 @@ export default function Hero() {
             placeholder="Skriv din fråga här..."
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            className="w-full p-4 rounded-md bg-[#0f172a] border border-gray-600 text-white"
+            className="w-full p-4 rounded-md bg-[#0f172a] border border-gray-600 text-white focus:ring-2 focus:ring-teal-400"
           />
           <button
             onClick={handleAsk}
-            className="mt-4 px-6 py-2 bg-teal-600 rounded hover:bg-teal-700 text-white flex items-center gap-2"
+            className="mt-4 px-6 py-2 bg-teal-600 rounded hover:bg-teal-700 text-white flex items-center gap-2 disabled:opacity-50"
             disabled={loading || !question.trim()}
           >
             {loading ? (
-              <span className="animate-pulse">Svarar...</span>
+              <span className="animate-ping inline-block w-3 h-3 bg-white rounded-full"></span>
             ) : (
               "Ställ fråga"
             )}
