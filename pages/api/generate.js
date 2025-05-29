@@ -78,7 +78,11 @@ export default async function handler(req, res) {
     });
 
     // 🚀 Skicka användaren vidare till dashboarden
-    res.status(200).json({ success: true, redirectTo: "/dashboard" });
+    res.status(200).json({
+      success: true,
+      redirectTo: "/dashboard",
+      loading: true,
+    });
   } catch (error) {
     console.error("Fel i generate.js:", error);
     res.status(500).json({ success: false, error: error.message });
