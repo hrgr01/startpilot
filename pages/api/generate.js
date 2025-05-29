@@ -1,7 +1,7 @@
 // /pages/api/generate.js
 import { OpenAI } from "openai";
-import supabase from "../../utils/supabase";
 import nodemailer from "nodemailer";
+import supabase from "../../utils/supabase";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -10,18 +10,18 @@ const transporter = nodemailer.createTransport({
   port: 587,
   auth: {
     user: "8d3879001@smtp-brevo.com",
-    pass: process.env.BREVO_SMTP_PASSWORD,
-  },
+    pass: process.env.BREVO_SMTP_PASSWORD
+  }
 });
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
 
   const { idea, email } = req.body;
-
   if (!idea || !email) return res.status(400).json({ error: "Missing data" });
 
-  const prompt = `Du är en AI-baserad startupcoach. Kunden skrev: "${idea}".
+  try {
+    const prompt = `Du är en AI-baserad startupcoach. Kunden skrev: \"${idea}\".
 Generera följande:
 1. Affärsidé
 2. Företagsnamn
@@ -34,29 +34,27 @@ Generera följande:
 9. 3 Facebook-annonser (hook + värde + CTA)
 10. En kort videobeskrivning`;
 
-  try {
     const completion = await openai.chat.completions.create({
       model: "gpt-4",
-      messages: [{ role: "user", content: prompt }],
+      messages: [{ role: "user", content: prompt }]
     });
 
-    const content = completion.choices[0]?.message?.content;
-    if (!content) throw new Error("Ingen text genererad");
+    const resultText = completion.choices[0].message.content;
 
-    // Skicka via e-post
+    // ✉️ Skicka till e-post
     await transporter.sendMail({
       from: "Startpilot <info@startpilot.org>",
       to: email,
-      subject: "🚀 Ditt AI-paket från Startpilot",
-      text: content,
+      subject: "🚀 Ditt AI-genererade affärspaket är klart!",
+      text: resultText
     });
 
-    // Spara till Supabase
-    await supabase.from("user_data").insert({ idea, email, result: content });
+    // 💾 Spara till Supabase
+    await supabase.from("user_data").insert([{ email, idea, result: resultText }]);
 
-    return res.status(200).json({ success: true });
+    res.status(200).json({ success: true, result: resultText });
   } catch (err) {
-    console.error("Fel i generering: ", err);
-    return res.status(500).json({ error: err.message });
+    console.error("Fel i generate.js:", err);
+    res.status(500).json({ error: "Något gick fel." });
   }
 }
