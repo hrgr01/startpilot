@@ -23,9 +23,10 @@ export default function Home() {
     setResult(data);
     setLoading(false);
 
-    if (data.success) {
+    // Vänta en kort stund och redirecta till dashboard
+    setTimeout(() => {
       router.push("/dashboard");
-    }
+    }, 2000);
   };
 
   return (
@@ -33,7 +34,7 @@ export default function Home() {
       <Hero />
       <div className="bg-[#0f172a] min-h-screen text-white px-6 py-12">
         <Head>
-          <title>Startpilot – Skapa din AI-affär</title>
+          <title>Startpilot – Skapa din AI-affärsidé</title>
         </Head>
 
         <div className="text-center mb-16 animate-fade-in">
@@ -50,7 +51,7 @@ export default function Home() {
           className="bg-[#1e293b] max-w-xl mx-auto p-8 rounded-2xl shadow-lg"
         >
           <label className="block mb-4">
-            <span className="text-sm font-medium">Din affärside</span>
+            <span className="text-sm font-medium">Din affärsidé</span>
             <textarea
               required
               value={idea}
@@ -73,31 +74,16 @@ export default function Home() {
           </label>
           <button
             disabled={loading}
-            className="w-full py-4 bg-teal-500 hover:bg-teal-600 text-white text-lg rounded-xl font-semibold flex justify-center items-center"
+            className="w-full py-4 bg-teal-500 hover:bg-teal-600 text-white text-lg rounded-xl font-semibold"
           >
             {loading ? (
-              <svg
-                className="animate-spin h-5 w-5 text-white mr-2"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                ></path>
-              </svg>
-            ) : null}
-            {loading ? "Skickar..." : "Skapa AI-paket"}
+              <div className="flex items-center justify-center gap-2">
+                <div className="w-5 h-5 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+                Skickar...
+              </div>
+            ) : (
+              "Skapa AI-paket"
+            )}
           </button>
         </form>
 
@@ -105,7 +91,7 @@ export default function Home() {
           <div className="mt-12 max-w-3xl mx-auto p-8 bg-[#1e293b] rounded-2xl shadow-xl animate-fade-in">
             <h2 className="text-2xl font-bold text-green-400 mb-4">✅ Ditt AI-paket är klart!</h2>
             <ul className="space-y-3 text-md">
-              <li><strong>💼 Företagsnamn:</strong> {result.name}</li>
+              <li><strong>📛 Företagsnamn:</strong> {result.name}</li>
               <li><strong>🎯 Målgrupp:</strong> {result.target}</li>
               <li><strong>📦 Produkt:</strong> {result.product}</li>
               <li><strong>🎤 Pitch:</strong> {result.pitch}</li>
