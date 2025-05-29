@@ -30,7 +30,10 @@ Generera följande:
 7. Call-to-action
 8. E-postämnesrad
 9. 3 Facebook-annonser (hook + värde + CTA)
-10. En kort videobeskrivning`;
+10. En kort videobeskrivning
+11. En onboarding-plan med steg
+12. En unik AI-produktfunktion
+13. Ett communityförslag (engagerande element)`;
 
   try {
     const completion = await openai.chat.completions.create({
