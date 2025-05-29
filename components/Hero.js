@@ -77,15 +77,24 @@ export default function Hero() {
           />
           <button
             onClick={handleAsk}
-            className="mt-4 px-6 py-2 bg-teal-600 rounded hover:bg-teal-700 text-white"
+            className="mt-4 px-6 py-2 bg-teal-600 rounded hover:bg-teal-700 text-white flex items-center gap-2"
             disabled={loading || !question.trim()}
           >
-            {loading ? "Svarar..." : "Ställ fråga"}
+            {loading ? (
+              <span className="animate-pulse">Svarar...</span>
+            ) : (
+              "Ställ fråga"
+            )}
           </button>
           {response && (
-            <div className="mt-4 bg-[#0f172a] p-4 rounded text-gray-200 border border-gray-700">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6 }}
+              className="mt-4 bg-[#0f172a] p-4 rounded text-gray-200 border border-gray-700"
+            >
               <strong>AI:</strong> {response}
-            </div>
+            </motion.div>
           )}
         </motion.div>
       </div>
