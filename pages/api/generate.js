@@ -40,19 +40,27 @@ Generera följande:
 
     const content = completion.choices[0].message.content;
 
-    // Parse GPT output to structured values (simple heuristic)
     const nameMatch = content.match(/Företagsnamn:\s*(.*)/);
+    const taglineMatch = content.match(/Tagline:\s*(.*)/);
+    const targetMatch = content.match(/Målgrupp:\s*(.*)/);
+    const productMatch = content.match(/Produktbeskrivning:\s*(.*)/);
     const pitchMatch = content.match(/Pitchdeck.*?:\s*(https?:\/\/\S+)/);
     const videoMatch = content.match(/Videobeskrivning.*?:\s*(https?:\/\/\S+)/);
     const storeMatch = content.match(/Butik.*?:\s*(https?:\/\/\S+)/);
+    const emailStatus = "Genererat";
 
     const parsedData = {
       email,
       idea,
       result: content,
+      name: nameMatch ? nameMatch[1] : null,
+      tagline: taglineMatch ? taglineMatch[1] : null,
+      target: targetMatch ? targetMatch[1] : null,
+      product: productMatch ? productMatch[1] : null,
       pitch_link: pitchMatch ? pitchMatch[1] : null,
       video_link: videoMatch ? videoMatch[1] : null,
       store_link: storeMatch ? storeMatch[1] : null,
+      email_status: emailStatus,
     };
 
     await supabase.from("user_data").insert([parsedData]);
@@ -64,7 +72,6 @@ Generera följande:
       text: content,
     });
 
-    // Returnera redirect URL så frontend kan navigera efter generering
     res.status(200).json({ success: true, redirectTo: "/dashboard" });
   } catch (error) {
     console.error("Fel i generate.js:", error);
