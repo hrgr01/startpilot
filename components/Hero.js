@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
+import supabase from "../utils/supabase";
 
 export default function Hero() {
   const router = useRouter();
@@ -9,6 +10,7 @@ export default function Hero() {
   const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(false);
   const [debouncedQuestion, setDebouncedQuestion] = useState("");
+  const [userEmail, setUserEmail] = useState(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -16,6 +18,18 @@ export default function Hero() {
     }, 300);
     return () => clearTimeout(timer);
   }, [question]);
+
+  useEffect(() => {
+    const getSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (session?.user?.email) {
+        setUserEmail(session.user.email);
+      }
+    };
+    getSession();
+  }, []);
 
   const handleClick = () => {
     router.push("/#form");
@@ -68,7 +82,6 @@ export default function Hero() {
         </motion.div>
       </div>
 
-      {/* 🔥 Interaktiv AI-chattmodul (förbättrad) */}
       <div className="mt-16 max-w-3xl mx-auto text-left">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -105,6 +118,19 @@ export default function Hero() {
             </motion.div>
           )}
         </motion.div>
+
+        {userEmail && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8, duration: 0.8 }}
+            className="mt-10 bg-[#1e293b] p-6 rounded-xl shadow-lg text-white"
+          >
+            <h3 className="text-xl font-semibold mb-4">📂 Du är inloggad som {userEmail}</h3>
+            <p className="mb-2">👉 Gå till din <a href="/dashboard" className="text-teal-400 underline">dashboard</a> för att se dina AI-paket.</p>
+            <p className="mb-2">➕ <a href="/#form" className="text-teal-400 underline">Skapa ett nytt AI-paket</a> direkt här.</p>
+          </motion.div>
+        )}
       </div>
     </section>
   );
