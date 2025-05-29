@@ -64,7 +64,7 @@ Generera följande:
       text: content,
     });
 
-    // Omdirigera till dashboard efter generering (svarar med redirect-url)
+    // Returnera redirect URL så frontend kan navigera efter generering
     res.status(200).json({ success: true, redirectTo: "/dashboard" });
   } catch (error) {
     console.error("Fel i generate.js:", error);
