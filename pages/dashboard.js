@@ -43,7 +43,15 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black text-white">
-        <p>Laddar din dashboard...</p>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="text-center"
+        >
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-white mx-auto mb-4"></div>
+          <p>Laddar din personliga dashboard...</p>
+        </motion.div>
       </div>
     );
   }
@@ -60,8 +68,13 @@ export default function Dashboard() {
           🧠 Din personliga Startpilot Dashboard
         </motion.h1>
 
-        <div className="bg-white text-black p-6 rounded-xl mb-6">
-          <h2 className="text-2xl font-bold mb-2">Affärsidé</h2>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="bg-white text-black p-6 rounded-xl mb-6"
+        >
+          <h2 className="text-2xl font-bold mb-2">Affärside</h2>
           <p className="text-lg">{userData.idea}</p>
 
           <div className="mt-4 flex flex-col gap-3">
@@ -87,32 +100,17 @@ export default function Dashboard() {
               🎥 Se AI-video
             </a>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="bg-white text-black p-6 rounded-xl mb-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+          className="bg-white text-black p-6 rounded-xl"
+        >
           <h3 className="text-xl font-bold mb-4">📬 E-postflöde</h3>
           <p>Status: {userData.email_status || "Ej påbörjat"}</p>
-        </div>
-
-        <div className="bg-white text-black p-6 rounded-xl">
-          <h3 className="text-xl font-bold mb-4">✨ AI-förslag – Ny vecka, nya idéer</h3>
-          <ul className="list-disc pl-5 space-y-2">
-            {userData.weekly_suggestions?.map((s, i) => (
-              <li key={i}>
-                <span className="font-semibold">{s.title}</span>
-                {s.shopifyProduct && (
-                  <a
-                    href={`https://shopify.com/${s.shopifyProduct}`}
-                    target="_blank"
-                    className="ml-2 text-blue-500 underline"
-                  >
-                    ➕ Lägg till i din butik
-                  </a>
-                )}
-              </li>
-            )) || <li>Inga nya förslag än.</li>}
-          </ul>
-        </div>
+        </motion.div>
       </div>
     </main>
   );
