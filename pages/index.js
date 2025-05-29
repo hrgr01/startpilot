@@ -26,7 +26,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Startpilot – Skapa din AI-affärsidé</title>
+        <title>Startpilot – Skapa din AI-affär</title>
       </Head>
       <Hero />
       <main className="bg-[#0f172a] min-h-screen text-white px-6 py-12">
@@ -40,15 +40,16 @@ export default function Home() {
             🚀 Starta ditt nästa företag med AI
           </h1>
           <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-            Skriv in din idé så bygger Startpilot ett komplett affärspaket på några sekunder. Allt skickas till din mejl – 100 % gratis.
+            Skriv in din idé så bygger Startpilot ett komplett affärspaket på några sekunder.
+            Allt skickas till din mejl – 100 % gratis.
           </p>
         </motion.div>
 
         <motion.form
           onSubmit={handleSubmit}
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
           className="bg-[#1e293b] max-w-xl mx-auto p-8 rounded-2xl shadow-lg"
         >
           <label className="block mb-4">
@@ -57,7 +58,7 @@ export default function Home() {
               required
               value={idea}
               onChange={(e) => setIdea(e.target.value)}
-              className="w-full mt-1 p-4 bg-[#0f172a] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400"
+              className="w-full mt-1 p-4 bg-[#0f172a] border border-gray-600 rounded-lg focus:outline-none"
               placeholder="T.ex. AI-tränare för stressade småbarnsföräldrar"
               rows={5}
             />
@@ -69,13 +70,13 @@ export default function Home() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full mt-1 p-4 bg-[#0f172a] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400"
+              className="w-full mt-1 p-4 bg-[#0f172a] border border-gray-600 rounded-lg focus:outline-none"
               placeholder="du@email.com"
             />
           </label>
           <button
             disabled={loading}
-            className="w-full py-4 bg-teal-500 hover:bg-teal-600 text-white text-lg rounded-xl font-semibold transition-transform transform hover:scale-105"
+            className="w-full py-4 bg-teal-500 hover:bg-teal-600 text-white text-lg rounded-xl font-semibold transition duration-300"
           >
             {loading ? "Skickar..." : "Skapa AI-paket"}
           </button>
@@ -83,9 +84,9 @@ export default function Home() {
 
         {result && (
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
+            transition={{ duration: 0.8 }}
             className="mt-12 max-w-3xl mx-auto p-8 bg-[#1e293b] rounded-2xl shadow-xl"
           >
             <h2 className="text-2xl font-bold text-green-400 mb-4">
@@ -98,7 +99,9 @@ export default function Home() {
               <li><strong>🎤 Pitch:</strong> {result.pitch}</li>
               <li><strong>📣 Facebook-Annons:</strong> {result.ad1}</li>
             </ul>
-            <p className="mt-6 text-sm text-gray-400">💌 Du har även fått allting till din mejl!</p>
+            <p className="mt-6 text-sm text-gray-400">
+              💌 Du har även fått allting till din mejl!
+            </p>
           </motion.div>
         )}
       </main>
