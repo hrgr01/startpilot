@@ -1,9 +1,8 @@
-// /pages/dashboard.js
+// pages/dashboard.js
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { createClient } from "@supabase/supabase-js";
 import { motion } from "framer-motion";
-import { Loader2 } from "lucide-react";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -48,8 +47,7 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white">
-        <Loader2 className="h-10 w-10 animate-spin mb-4" />
+      <div className="min-h-screen flex items-center justify-center bg-black text-white">
         <p>Laddar din dashboard...</p>
       </div>
     );
@@ -68,7 +66,7 @@ export default function Dashboard() {
         </motion.h1>
 
         <div className="bg-white text-black p-6 rounded-xl mb-6">
-          <h2 className="text-2xl font-bold mb-2">Affärsidé</h2>
+          <h2 className="text-2xl font-bold mb-2">Affärside</h2>
           <p className="text-lg">{userData.idea}</p>
 
           <div className="mt-4 flex flex-col gap-3">
