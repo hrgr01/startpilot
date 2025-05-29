@@ -1,4 +1,5 @@
 // pages/index.js
+import Hero from "../components/Hero";
 import { useState } from "react";
 import Head from "next/head";
 
@@ -22,6 +23,7 @@ export default function Home() {
   };
 
   return (
+    <Hero />
     <div className="bg-[#0f172a] min-h-screen text-white px-6 py-12">
       <Head>
         <title>Startpilot – Skapa din AI-affärsidé</title>
