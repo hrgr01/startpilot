@@ -10,14 +10,16 @@ const transporter = nodemailer.createTransport({
   port: 587,
   auth: {
     user: "8d3879001@smtp-brevo.com",
-    pass: process.env.BREVO_SMTP_PASSWORD
-  }
+    pass: process.env.BREVO_SMTP_PASSWORD,
+  },
 });
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
 
   const { idea, email } = req.body;
+
+  if (!idea || !email) return res.status(400).json({ error: "Missing data" });
 
   const prompt = `Du är en AI-baserad startupcoach. Kunden skrev: "${idea}".
 Generera följande:
@@ -36,23 +38,25 @@ Generera följande:
     const completion = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [{ role: "user", content: prompt }],
-      temperature: 0.7
     });
 
-    const result = completion.choices[0].message.content;
+    const content = completion.choices[0]?.message?.content;
+    if (!content) throw new Error("Ingen text genererad");
 
-    await supabase.from("user_data").insert({ idea, email, result });
-
+    // Skicka via e-post
     await transporter.sendMail({
-      from: "info@startpilot.org",
+      from: "Startpilot <info@startpilot.org>",
       to: email,
-      subject: "🚀 Ditt AI-startpaket från Startpilot",
-      text: result
+      subject: "🚀 Ditt AI-paket från Startpilot",
+      text: content,
     });
 
-    res.status(200).json({ success: true });
-  } catch (error) {
-    console.error("Fel i generate:", error);
-    res.status(500).json({ success: false, error: error.message });
+    // Spara till Supabase
+    await supabase.from("user_data").insert({ idea, email, result: content });
+
+    return res.status(200).json({ success: true });
+  } catch (err) {
+    console.error("Fel i generering: ", err);
+    return res.status(500).json({ error: err.message });
   }
 }
