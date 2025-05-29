@@ -1,4 +1,4 @@
-// /pages/index.js
+// pages/index.js
 import Hero from "../components/Hero";
 import { useState } from "react";
 import Head from "next/head";
@@ -7,27 +7,23 @@ import { useRouter } from "next/router";
 export default function Home() {
   const [idea, setIdea] = useState("");
   const [email, setEmail] = useState("");
-  const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
     const res = await fetch("/api/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ idea, email }),
     });
-
     const data = await res.json();
     setLoading(false);
-
     if (data.success) {
       router.push("/dashboard");
     } else {
-      alert("Något gick fel. Vänligen försök igen.");
+      alert("Något gick fel. Försök igen.");
     }
   };
 
@@ -36,7 +32,7 @@ export default function Home() {
       <Hero />
       <div className="bg-[#0f172a] min-h-screen text-white px-6 py-12">
         <Head>
-          <title>Startpilot – Skapa din AI-affär</title>
+          <title>Startpilot – Skapa din AI-affärsidé</title>
         </Head>
 
         <div className="text-center mb-16 animate-fade-in">
@@ -76,32 +72,9 @@ export default function Home() {
           </label>
           <button
             disabled={loading}
-            className="w-full py-4 bg-teal-500 hover:bg-teal-600 text-white text-lg rounded-xl font-semibold flex justify-center items-center"
+            className="w-full py-4 bg-teal-500 hover:bg-teal-600 text-white text-lg rounded-xl font-semibold"
           >
-            {loading ? (
-              <svg
-                className="animate-spin h-6 w-6 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v8z"
-                ></path>
-              </svg>
-            ) : (
-              "Skapa AI-paket"
-            )}
+            {loading ? "⏳ Skapar AI-paket..." : "Skapa AI-paket"}
           </button>
         </form>
       </div>
