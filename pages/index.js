@@ -2,6 +2,7 @@
 import Hero from "../components/Hero";
 import { useState } from "react";
 import Head from "next/head";
+import { motion } from "framer-motion";
 
 export default function Home() {
   const [idea, setIdea] = useState("");
@@ -15,7 +16,7 @@ export default function Home() {
     const res = await fetch("/api/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ idea, email }),
+      body: JSON.stringify({ idea, email })
     });
     const data = await res.json();
     setResult(data);
@@ -24,32 +25,39 @@ export default function Home() {
 
   return (
     <>
+      <Head>
+        <title>Startpilot – Skapa din AI-affärsidé</title>
+      </Head>
       <Hero />
-      <div className="bg-[#0f172a] min-h-screen text-white px-6 py-12">
-        <Head>
-          <title>Startpilot – Skapa din AI-affärsidé</title>
-        </Head>
-
-        <div className="text-center mb-16 animate-fade-in">
+      <main className="bg-[#0f172a] min-h-screen text-white px-6 py-12">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
           <h1 className="text-5xl font-bold mb-4">
             🚀 Starta ditt nästa företag med AI
           </h1>
           <p className="text-lg text-gray-300 max-w-2xl mx-auto">
             Skriv in din idé så bygger Startpilot ett komplett affärspaket på några sekunder. Allt skickas till din mejl – 100 % gratis.
           </p>
-        </div>
+        </motion.div>
 
-        <form
+        <motion.form
           onSubmit={handleSubmit}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
           className="bg-[#1e293b] max-w-xl mx-auto p-8 rounded-2xl shadow-lg"
         >
           <label className="block mb-4">
-            <span className="text-sm font-medium">Din affärside</span>
+            <span className="text-sm font-medium">Din affärsidé</span>
             <textarea
               required
               value={idea}
               onChange={(e) => setIdea(e.target.value)}
-              className="w-full mt-1 p-4 bg-[#0f172a] border border-gray-600 rounded-lg focus:outline-none"
+              className="w-full mt-1 p-4 bg-[#0f172a] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400"
               placeholder="T.ex. AI-tränare för stressade småbarnsföräldrar"
               rows={5}
             />
@@ -61,36 +69,39 @@ export default function Home() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full mt-1 p-4 bg-[#0f172a] border border-gray-600 rounded-lg focus:outline-none"
+              className="w-full mt-1 p-4 bg-[#0f172a] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400"
               placeholder="du@email.com"
             />
           </label>
           <button
             disabled={loading}
-            className="w-full py-4 bg-teal-500 hover:bg-teal-600 text-white text-lg rounded-xl font-semibold"
+            className="w-full py-4 bg-teal-500 hover:bg-teal-600 text-white text-lg rounded-xl font-semibold transition-transform transform hover:scale-105"
           >
             {loading ? "Skickar..." : "Skapa AI-paket"}
           </button>
-        </form>
+        </motion.form>
 
         {result && (
-          <div className="mt-12 max-w-3xl mx-auto p-8 bg-[#1e293b] rounded-2xl shadow-xl animate-fade-in">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            className="mt-12 max-w-3xl mx-auto p-8 bg-[#1e293b] rounded-2xl shadow-xl"
+          >
             <h2 className="text-2xl font-bold text-green-400 mb-4">
               ✅ Ditt AI-paket är klart!
             </h2>
             <ul className="space-y-3 text-md">
-              <li><strong>💼 Företagsnamn:</strong> {result.name}</li>
+              <li><strong>📛 Företagsnamn:</strong> {result.name}</li>
               <li><strong>🎯 Målgrupp:</strong> {result.target}</li>
               <li><strong>📦 Produkt:</strong> {result.product}</li>
               <li><strong>🎤 Pitch:</strong> {result.pitch}</li>
               <li><strong>📣 Facebook-Annons:</strong> {result.ad1}</li>
             </ul>
-            <p className="mt-6 text-sm text-gray-400">
-              📬 Du har även fått allting till din mejl!
-            </p>
-          </div>
+            <p className="mt-6 text-sm text-gray-400">💌 Du har även fått allting till din mejl!</p>
+          </motion.div>
         )}
-      </div>
+      </main>
     </>
   );
 }
