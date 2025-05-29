@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [ideas, setIdeas] = useState([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -16,7 +17,10 @@ export default function Dashboard() {
         error
       } = await supabase.auth.getSession();
 
-      if (error) return;
+      if (error) {
+        console.error("Error getting session:", error.message);
+        return;
+      }
 
       if (!session) {
         router.push("/login");
@@ -37,7 +41,12 @@ export default function Dashboard() {
       .eq("email", email)
       .order("created_at", { ascending: false });
 
-    if (!error) setIdeas(data);
+    if (!error && data) {
+      setIdeas(data);
+    } else {
+      console.error("Error fetching ideas:", error?.message);
+    }
+    setLoading(false);
   };
 
   return (
@@ -45,7 +54,9 @@ export default function Dashboard() {
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold mb-6">📊 Din AI-dashboard</h1>
 
-        {ideas.length > 0 ? (
+        {loading ? (
+          <p className="text-gray-400 animate-pulse">🔄 Laddar dina AI-idéer...</p>
+        ) : ideas.length > 0 ? (
           <motion.ul
             initial="hidden"
             animate="visible"
@@ -77,7 +88,7 @@ export default function Dashboard() {
             ))}
           </motion.ul>
         ) : (
-          <p className="text-gray-400">Du har ännu inga sparade AI-paket.</p>
+          <p className="text-gray-400">❗ Du har ännu inga sparade AI-paket.</p>
         )}
 
         <div className="mt-8">
