@@ -7,7 +7,6 @@ import { useRouter } from "next/router";
 export default function Home() {
   const [idea, setIdea] = useState("");
   const [email, setEmail] = useState("");
-  const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -17,16 +16,16 @@ export default function Home() {
     const res = await fetch("/api/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ idea, email })
+      body: JSON.stringify({ idea, email }),
     });
     const data = await res.json();
-    setResult(data);
     setLoading(false);
 
-    // Vänta en kort stund och redirecta till dashboard
-    setTimeout(() => {
+    if (data.success) {
       router.push("/dashboard");
-    }, 2000);
+    } else {
+      alert("Något gick fel. Försök igen.");
+    }
   };
 
   return (
@@ -76,30 +75,9 @@ export default function Home() {
             disabled={loading}
             className="w-full py-4 bg-teal-500 hover:bg-teal-600 text-white text-lg rounded-xl font-semibold"
           >
-            {loading ? (
-              <div className="flex items-center justify-center gap-2">
-                <div className="w-5 h-5 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-                Skickar...
-              </div>
-            ) : (
-              "Skapa AI-paket"
-            )}
+            {loading ? "Skickar..." : "Skapa AI-paket"}
           </button>
         </form>
-
-        {result && (
-          <div className="mt-12 max-w-3xl mx-auto p-8 bg-[#1e293b] rounded-2xl shadow-xl animate-fade-in">
-            <h2 className="text-2xl font-bold text-green-400 mb-4">✅ Ditt AI-paket är klart!</h2>
-            <ul className="space-y-3 text-md">
-              <li><strong>📛 Företagsnamn:</strong> {result.name}</li>
-              <li><strong>🎯 Målgrupp:</strong> {result.target}</li>
-              <li><strong>📦 Produkt:</strong> {result.product}</li>
-              <li><strong>🎤 Pitch:</strong> {result.pitch}</li>
-              <li><strong>📣 Facebook-Annons:</strong> {result.ad1}</li>
-            </ul>
-            <p className="mt-6 text-sm text-gray-400">💌 Du har även fått allting till din mejl!</p>
-          </div>
-        )}
       </div>
     </>
   );
