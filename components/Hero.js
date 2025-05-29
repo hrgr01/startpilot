@@ -11,6 +11,7 @@ export default function Hero() {
   const [loading, setLoading] = useState(false);
   const [debouncedQuestion, setDebouncedQuestion] = useState("");
   const [userEmail, setUserEmail] = useState(null);
+  const [userIdeas, setUserIdeas] = useState([]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -26,10 +27,23 @@ export default function Hero() {
       } = await supabase.auth.getSession();
       if (session?.user?.email) {
         setUserEmail(session.user.email);
+        fetchUserIdeas(session.user.email);
       }
     };
     getSession();
   }, []);
+
+  const fetchUserIdeas = async (email) => {
+    const { data, error } = await supabase
+      .from("ai_ideas")
+      .select("id, name, pitch, created_at")
+      .eq("email", email)
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      setUserIdeas(data);
+    }
+  };
 
   const handleClick = () => {
     router.push("/#form");
@@ -131,8 +145,22 @@ export default function Hero() {
             className="mt-10 bg-[#1e293b] p-6 rounded-xl shadow-lg text-white"
           >
             <h3 className="text-xl font-semibold mb-4">📂 Du är inloggad som {userEmail}</h3>
-            <p className="mb-2">👉 Gå till din <button onClick={handleDashboard} className="text-teal-400 underline">dashboard</button> för att se dina AI-paket.</p>
-            <p className="mb-2">➕ <a href="/#form" className="text-teal-400 underline">Skapa ett nytt AI-paket</a> direkt här.</p>
+            <p className="mb-2">👉 <button onClick={handleDashboard} className="text-teal-400 underline">Gå till din dashboard</button></p>
+            <p className="mb-6">➕ <a href="/#form" className="text-teal-400 underline">Skapa ett nytt AI-paket</a></p>
+            {userIdeas.length > 0 && (
+              <div>
+                <h4 className="text-lg font-medium mb-2">📦 Ditt senaste AI-innehåll:</h4>
+                <ul className="space-y-2">
+                  {userIdeas.map((idea) => (
+                    <li key={idea.id} className="border-b border-gray-700 pb-2">
+                      <strong>{idea.name}</strong>
+                      <p className="text-sm text-gray-400">{idea.pitch}</p>
+                      <p className="text-xs text-gray-500">{new Date(idea.created_at).toLocaleString()}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </motion.div>
         )}
       </div>
