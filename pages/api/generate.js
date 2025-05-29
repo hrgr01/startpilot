@@ -63,8 +63,10 @@ Generera följande:
       email_status: emailStatus,
     };
 
+    // 🧠 Spara användardata i databasen
     await supabase.from("user_data").insert([parsedData]);
 
+    // ✉️ Skicka e-post till användaren
     await transporter.sendMail({
       from: "Startpilot <info@startpilot.org>",
       to: email,
@@ -72,6 +74,7 @@ Generera följande:
       text: content,
     });
 
+    // 🚀 Skicka användaren vidare till dashboarden
     res.status(200).json({ success: true, redirectTo: "/dashboard" });
   } catch (error) {
     console.error("Fel i generate.js:", error);
