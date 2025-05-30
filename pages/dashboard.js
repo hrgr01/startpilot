@@ -8,6 +8,7 @@ export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [ideas, setIdeas] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showFull, setShowFull] = useState({});
   const router = useRouter();
 
   useEffect(() => {
@@ -49,6 +50,10 @@ export default function Dashboard() {
     setLoading(false);
   };
 
+  const toggleView = (id) => {
+    setShowFull((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] text-white py-12 px-6 relative">
       <div className="absolute inset-0 bg-gradient-to-br from-[#1e293b] via-transparent to-[#0f172a] blur-3xl opacity-30 z-0"></div>
@@ -61,6 +66,25 @@ export default function Dashboard() {
         >
           📊 Din AI-dashboard
         </motion.h1>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
+          <div className="bg-white/10 text-center p-4 rounded-xl">
+            <h3 className="text-sm text-gray-400">Totalt paket</h3>
+            <p className="text-2xl font-bold">{ideas.length}</p>
+          </div>
+          <div className="bg-white/10 text-center p-4 rounded-xl">
+            <h3 className="text-sm text-gray-400">Senaste idé</h3>
+            <p className="text-md">{ideas[0]?.name || "-"}</p>
+          </div>
+          <div className="bg-white/10 text-center p-4 rounded-xl">
+            <h3 className="text-sm text-gray-400">Senaste datum</h3>
+            <p className="text-md">{ideas[0] ? new Date(ideas[0].created_at).toLocaleDateString() : "-"}</p>
+          </div>
+          <div className="bg-white/10 text-center p-4 rounded-xl">
+            <h3 className="text-sm text-gray-400">Din AI-score</h3>
+            <p className="text-xl text-green-400 font-semibold">86%</p>
+          </div>
+        </div>
 
         {loading ? (
           <motion.div
@@ -78,21 +102,14 @@ export default function Dashboard() {
             animate="visible"
             variants={{
               hidden: { opacity: 0, y: 20 },
-              visible: {
-                opacity: 1,
-                y: 0,
-                transition: { staggerChildren: 0.1 }
-              }
+              visible: { opacity: 1, y: 0, transition: { staggerChildren: 0.1 } }
             }}
             className="grid grid-cols-1 md:grid-cols-2 gap-6"
           >
             {ideas.map((idea) => (
               <motion.li
                 key={idea.id}
-                variants={{
-                  hidden: { opacity: 0, y: 10 },
-                  visible: { opacity: 1, y: 0 }
-                }}
+                variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
                 whileHover={{ scale: 1.03, boxShadow: "0 0 20px rgba(255,255,255,0.2)" }}
                 transition={{ type: "spring", stiffness: 300 }}
                 className="bg-white/10 border border-white/10 p-6 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 backdrop-blur-md relative overflow-hidden"
@@ -100,18 +117,21 @@ export default function Dashboard() {
                 <div className="absolute top-0 right-0 p-2">
                   <span className="text-sm bg-teal-600 text-white px-2 py-1 rounded-full animate-pulse">AI Score: 86%</span>
                 </div>
-                <motion.h2
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className="text-2xl font-semibold mb-2 text-white"
-                >
+                <motion.h2 className="text-2xl font-semibold mb-2 text-white">
                   {idea.name}
                 </motion.h2>
-                <p className="text-gray-300 mb-1 line-clamp-3">{idea.pitch}</p>
+                <p className="text-gray-300 mb-1">
+                  {showFull[idea.id] ? idea.pitch : `${idea.pitch.slice(0, 140)}...`}
+                </p>
                 <p className="text-sm text-gray-500">
                   Skapad: {new Date(idea.created_at).toLocaleString()}
                 </p>
+                <button
+                  className="mt-2 text-sm text-teal-400 hover:underline"
+                  onClick={() => toggleView(idea.id)}
+                >
+                  {showFull[idea.id] ? "Visa mindre" : "Visa mer"}
+                </button>
               </motion.li>
             ))}
           </motion.ul>
