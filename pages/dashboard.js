@@ -11,12 +11,7 @@ import {
   BrainCircuit,
   User,
   LineChart,
-  Bot,
-  Globe,
-  Wand2,
-  Share2,
-  Settings,
-  LayoutDashboard
+  Bot
 } from "lucide-react";
 
 export default function Dashboard() {
@@ -83,108 +78,109 @@ export default function Dashboard() {
   const aiScore = ideas.length > 0 ? Math.floor(75 + (ideas.length * 5) % 25) : 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] text-white py-12 px-6 relative">
-      <div className="absolute inset-0 bg-gradient-to-br from-[#1e293b] via-transparent to-[#0f172a] blur-3xl opacity-30 z-0"></div>
-      <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-purple-500/10 via-transparent to-pink-500/10 z-0"></div>
-      <div className="backdrop-blur-lg bg-white/5 border border-white/10 rounded-xl shadow-xl z-10 relative max-w-5xl mx-auto p-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] text-white py-12 px-6">
+      <div className="max-w-5xl mx-auto">
+        <motion.h1
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-4xl font-bold mb-6 text-center"
+        >
+          📊 {t('dashboard.title')}
+        </motion.h1>
 
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="flex items-center justify-between mb-6">
-          <motion.h1 className="text-4xl font-bold">📊 {t('dashboard.title')}</motion.h1>
-          {user && (
-            <div className="flex items-center gap-3 text-sm text-gray-300">
-              <User className="w-5 h-5" />
-              <span>{user.email}</span>
-            </div>
-          )}
-        </motion.div>
+        {user && (
+          <div className="flex justify-end items-center mb-4">
+            <User className="w-5 h-5 mr-2 text-gray-300" />
+            <span className="text-gray-300 text-sm">{user.email}</span>
+          </div>
+        )}
 
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.2 }} className="mb-8 p-4 bg-white/10 border border-white/10 rounded-xl text-center text-gray-300 text-sm">
-          {t('dashboard.intro') || "Välkommen! Här kan du se dina idéer, klicka för att öppna dem, skapa nya eller prata med vår AI-coach."}
-        </motion.div>
+        <div className="flex justify-center mb-6">
+          <select
+            value={i18n.language}
+            onChange={(e) => i18n.changeLanguage(e.target.value)}
+            className="bg-gray-700 text-white rounded p-2 text-sm"
+          >
+            <option value="en">English</option>
+            <option value="sv">Svenska</option>
+          </select>
+        </div>
 
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }} className="mb-10">
+        <div className="mb-8 text-center text-gray-400">
+          <p>{t('dashboard.intro')}</p>
+        </div>
+
+        <div className="mb-10">
           <h2 className="text-sm text-gray-400 mb-1 flex items-center gap-2">
-            <LineChart className="w-4 h-4" /> Framsteg
+            <LineChart className="w-4 h-4" /> {t('dashboard.progress')}
           </h2>
           <div className="w-full bg-white/10 rounded-full h-4 overflow-hidden">
-            <motion.div className="bg-teal-500 h-4" initial={{ width: 0 }} animate={{ width: `${progress}%` }} transition={{ duration: 1 }} />
+            <motion.div
+              className="bg-teal-500 h-4"
+              initial={{ width: 0 }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 1 }}
+            />
           </div>
-          <p className="text-xs text-gray-400 mt-1">{ideas.length} av {ideaLimit} idéer skapade denna vecka</p>
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4 }} className="mb-10 bg-indigo-500/10 border border-indigo-500/30 rounded-xl p-4 flex items-center gap-4">
-          <Bot className="w-8 h-8 text-indigo-300" />
-          <div className="text-sm text-indigo-200">
-            <strong>Tips:</strong> Klicka på 💬 knappen nedan för att chatta med vår AI och få hjälp att utveckla dina idéer!
-          </div>
-        </motion.div>
+          <p className="text-xs text-gray-400 mt-1">{ideas.length} / {ideaLimit} {t('dashboard.created_this_week')}</p>
+        </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
-          <div className="bg-white/10 text-center p-4 rounded-xl flex flex-col items-center">
-            <Lightbulb className="w-5 h-5 text-yellow-400 mb-1" />
-            <h3 className="text-sm text-gray-400">Totalt</h3>
-            <p className="text-2xl font-bold">{ideas.length}</p>
+          <div className="bg-white/10 text-center p-4 rounded-xl">
+            <Lightbulb className="mx-auto text-yellow-400" />
+            <p>{t('dashboard.total_ideas')}: {ideas.length}</p>
           </div>
-          <div className="bg-white/10 text-center p-4 rounded-xl flex flex-col items-center">
-            <Sparkles className="w-5 h-5 text-pink-400 mb-1" />
-            <h3 className="text-sm text-gray-400">Senaste idé</h3>
-            <p className="text-md">{ideas[0]?.name || "-"}</p>
+          <div className="bg-white/10 text-center p-4 rounded-xl">
+            <Sparkles className="mx-auto text-pink-400" />
+            <p>{t('dashboard.latest')}: {ideas[0]?.name || '-'}</p>
           </div>
-          <div className="bg-white/10 text-center p-4 rounded-xl flex flex-col items-center">
-            <Calendar className="w-5 h-5 text-blue-400 mb-1" />
-            <h3 className="text-sm text-gray-400">Senast skapat</h3>
-            <p className="text-md">{ideas[0] ? formatDate(ideas[0].created_at) : "-"}</p>
+          <div className="bg-white/10 text-center p-4 rounded-xl">
+            <Calendar className="mx-auto text-blue-400" />
+            <p>{t('dashboard.last_created')}: {ideas[0] ? formatDate(ideas[0].created_at) : '-'}</p>
           </div>
-          <div className="bg-white/10 text-center p-4 rounded-xl flex flex-col items-center">
-            <BrainCircuit className="w-5 h-5 text-green-400 mb-1" />
-            <h3 className="text-sm text-gray-400">AI Score</h3>
-            <p className="text-xl text-green-400 font-semibold">{aiScore}%</p>
+          <div className="bg-white/10 text-center p-4 rounded-xl">
+            <BrainCircuit className="mx-auto text-green-400" />
+            <p>{t('dashboard.ai_score')}: {aiScore}%</p>
           </div>
         </div>
 
         {loading ? (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ repeat: Infinity, duration: 1, ease: "easeInOut" }} className="flex justify-center items-center" role="status" aria-live="polite">
-            <div className="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-            <span className="ml-4 text-gray-400">🔄 {t('dashboard.loading')}</span>
-          </motion.div>
+          <div className="text-center text-gray-400">
+            {t('dashboard.loading')}
+          </div>
         ) : ideas.length > 0 ? (
-          <motion.ul initial="hidden" animate="visible" variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { staggerChildren: 0.1 } } }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <ul className="space-y-6">
             {ideas.map((idea) => (
-              <motion.li key={idea.id} variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} whileHover={{ scale: 1.03, boxShadow: "0 0 20px rgba(255,255,255,0.2)" }} transition={{ type: "spring", stiffness: 300 }} className="bg-white/10 border border-white/10 p-6 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 backdrop-blur-md relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-2">
-                  <span className="text-sm bg-teal-600 text-white px-2 py-1 rounded-full animate-pulse">AI Score: {aiScore}%</span>
-                </div>
-                <motion.h2 className="text-2xl font-semibold mb-2 text-white">
-                  {idea.name}
-                </motion.h2>
-                <p className="text-gray-300 mb-1">
-                  {showFull[idea.id] ? idea.pitch : `${idea.pitch.slice(0, 140)}...`}
+              <li key={idea.id} className="bg-white/10 p-6 rounded-xl relative">
+                <h2 className="text-xl font-bold text-white">{idea.name}</h2>
+                <p className="text-gray-300 mt-2">
+                  {showFull[idea.id] ? idea.pitch : `${idea.pitch.slice(0, 120)}...`}
                 </p>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 mt-1">
                   {t('dashboard.created')}: {formatDate(idea.created_at)}
                 </p>
-                <button className="mt-2 text-sm text-teal-400 hover:underline" onClick={() => toggleView(idea.id)}>
+                <button
+                  className="mt-2 text-sm text-teal-400 hover:underline"
+                  onClick={() => toggleView(idea.id)}
+                >
                   {showFull[idea.id] ? t('dashboard.less') : t('dashboard.more')}
                 </button>
-              </motion.li>
+              </li>
             ))}
-          </motion.ul>
+          </ul>
         ) : (
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }} className="text-gray-400 text-center">
-            ❗ {t('dashboard.no_ideas')}
-          </motion.p>
+          <p className="text-center text-gray-400">{t('dashboard.no_ideas')}</p>
         )}
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="mt-10 flex justify-center gap-4 flex-wrap">
-          <a href="/#form" className="bg-teal-500 hover:bg-teal-600 transition text-white px-6 py-3 rounded-xl font-semibold shadow relative overflow-hidden">
-            <span className="absolute inset-0 bg-white/10 rounded-xl blur-sm opacity-20 animate-pulse"></span>
-            <span className="relative">➕ {t('dashboard.new_package')}</span>
+        <div className="mt-10 flex justify-center gap-4 flex-wrap">
+          <a href="/#form" className="bg-teal-500 hover:bg-teal-600 px-6 py-3 rounded-xl font-semibold text-white">
+            ➕ {t('dashboard.new_package')}
           </a>
-          <a href="/chat" className="bg-indigo-500 hover:bg-indigo-600 transition text-white px-6 py-3 rounded-xl font-semibold shadow relative overflow-hidden">
-            <span className="absolute inset-0 bg-white/10 rounded-xl blur-sm opacity-20 animate-pulse"></span>
-            <span className="relative">💬 {t('dashboard.open_chat')}</span>
+          <a href="/chat" className="bg-indigo-500 hover:bg-indigo-600 px-6 py-3 rounded-xl font-semibold text-white">
+            💬 {t('dashboard.open_chat')}
           </a>
-        </motion.div>
+        </div>
       </div>
     </div>
   );
