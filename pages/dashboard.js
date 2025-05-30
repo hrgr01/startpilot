@@ -79,6 +79,16 @@ export default function Dashboard() {
   const progress = Math.min((ideas.length / ideaLimit) * 100, 100);
   const aiScore = ideas.length > 0 ? Math.floor(75 + (ideas.length * 5) % 25) : 0;
 
+  useEffect(() => {
+    const savedLang = localStorage.getItem("lang");
+    if (savedLang) i18n.changeLanguage(savedLang);
+  }, []);
+
+  const handleLangChange = (lang) => {
+    i18n.changeLanguage(lang);
+    localStorage.setItem("lang", lang);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] text-white py-12 px-6">
       <div className="max-w-5xl mx-auto">
@@ -100,7 +110,7 @@ export default function Dashboard() {
             <div>
               <select
                 value={i18n.language}
-                onChange={(e) => i18n.changeLanguage(e.target.value)}
+                onChange={(e) => handleLangChange(e.target.value)}
                 className="bg-gray-700 text-white rounded p-2 text-sm"
               >
                 <option value="en">English</option>
