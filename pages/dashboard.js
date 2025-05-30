@@ -126,13 +126,19 @@ export default function Dashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="mt-10 flex justify-center"
+          className="mt-10 flex justify-center gap-4 flex-wrap"
         >
           <a
             href="/#form"
             className="bg-teal-500 hover:bg-teal-600 transition text-white px-6 py-3 rounded-xl font-semibold shadow"
           >
             ➕ Skapa nytt AI-paket
+          </a>
+          <a
+            href="/chat"
+            className="bg-indigo-500 hover:bg-indigo-600 transition text-white px-6 py-3 rounded-xl font-semibold shadow"
+          >
+            💬 Öppna AI-chatten
           </a>
         </motion.div>
       </div>
