@@ -3,8 +3,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import supabase from "../utils/supabase";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 export default function Dashboard() {
+  const { t } = useTranslation();
   const [user, setUser] = useState(null);
   const [ideas, setIdeas] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -64,24 +66,24 @@ export default function Dashboard() {
           transition={{ duration: 0.6 }}
           className="text-4xl font-bold mb-6 text-center"
         >
-          📊 Din AI-dashboard
+          📊 {t('dashboard.title')}
         </motion.h1>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
           <div className="bg-white/10 text-center p-4 rounded-xl">
-            <h3 className="text-sm text-gray-400">Totalt paket</h3>
+            <h3 className="text-sm text-gray-400">{t('dashboard.total')}</h3>
             <p className="text-2xl font-bold">{ideas.length}</p>
           </div>
           <div className="bg-white/10 text-center p-4 rounded-xl">
-            <h3 className="text-sm text-gray-400">Senaste idé</h3>
+            <h3 className="text-sm text-gray-400">{t('dashboard.latest_idea')}</h3>
             <p className="text-md">{ideas[0]?.name || "-"}</p>
           </div>
           <div className="bg-white/10 text-center p-4 rounded-xl">
-            <h3 className="text-sm text-gray-400">Senaste datum</h3>
+            <h3 className="text-sm text-gray-400">{t('dashboard.latest_date')}</h3>
             <p className="text-md">{ideas[0] ? new Date(ideas[0].created_at).toLocaleDateString() : "-"}</p>
           </div>
           <div className="bg-white/10 text-center p-4 rounded-xl">
-            <h3 className="text-sm text-gray-400">Din AI-score</h3>
+            <h3 className="text-sm text-gray-400">{t('dashboard.ai_score')}</h3>
             <p className="text-xl text-green-400 font-semibold">86%</p>
           </div>
         </div>
@@ -94,7 +96,7 @@ export default function Dashboard() {
             className="flex justify-center items-center"
           >
             <div className="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-            <span className="ml-4 text-gray-400">🔄 Laddar dina AI-idéer...</span>
+            <span className="ml-4 text-gray-400">🔄 {t('dashboard.loading')}</span>
           </motion.div>
         ) : ideas.length > 0 ? (
           <motion.ul
@@ -124,13 +126,13 @@ export default function Dashboard() {
                   {showFull[idea.id] ? idea.pitch : `${idea.pitch.slice(0, 140)}...`}
                 </p>
                 <p className="text-sm text-gray-500">
-                  Skapad: {new Date(idea.created_at).toLocaleString()}
+                  {t('dashboard.created')}: {new Date(idea.created_at).toLocaleString()}
                 </p>
                 <button
                   className="mt-2 text-sm text-teal-400 hover:underline"
                   onClick={() => toggleView(idea.id)}
                 >
-                  {showFull[idea.id] ? "Visa mindre" : "Visa mer"}
+                  {showFull[idea.id] ? t('dashboard.less') : t('dashboard.more')}
                 </button>
               </motion.li>
             ))}
@@ -142,7 +144,7 @@ export default function Dashboard() {
             transition={{ duration: 0.4 }}
             className="text-gray-400 text-center"
           >
-            ❗ Du har ännu inga sparade AI-paket.
+            ❗ {t('dashboard.no_ideas')}
           </motion.p>
         )}
 
@@ -157,14 +159,14 @@ export default function Dashboard() {
             className="bg-teal-500 hover:bg-teal-600 transition text-white px-6 py-3 rounded-xl font-semibold shadow relative overflow-hidden"
           >
             <span className="absolute inset-0 bg-white/10 rounded-xl blur-sm opacity-20 animate-pulse"></span>
-            <span className="relative">➕ Skapa nytt AI-paket</span>
+            <span className="relative">➕ {t('dashboard.new_package')}</span>
           </a>
           <a
             href="/chat"
             className="bg-indigo-500 hover:bg-indigo-600 transition text-white px-6 py-3 rounded-xl font-semibold shadow relative overflow-hidden"
           >
             <span className="absolute inset-0 bg-white/10 rounded-xl blur-sm opacity-20 animate-pulse"></span>
-            <span className="relative">💬 Öppna AI-chatten</span>
+            <span className="relative">💬 {t('dashboard.open_chat')}</span>
           </a>
         </motion.div>
       </div>
