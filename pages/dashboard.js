@@ -93,10 +93,13 @@ export default function Dashboard() {
                   hidden: { opacity: 0, y: 10 },
                   visible: { opacity: 1, y: 0 }
                 }}
-                whileHover={{ scale: 1.02 }}
+                whileHover={{ scale: 1.03, boxShadow: "0 0 20px rgba(255,255,255,0.2)" }}
                 transition={{ type: "spring", stiffness: 300 }}
-                className="bg-white/10 border border-white/10 p-6 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 backdrop-blur-md"
+                className="bg-white/10 border border-white/10 p-6 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 backdrop-blur-md relative overflow-hidden"
               >
+                <div className="absolute top-0 right-0 p-2">
+                  <span className="text-sm bg-teal-600 text-white px-2 py-1 rounded-full animate-pulse">AI Score: 86%</span>
+                </div>
                 <motion.h2
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -105,7 +108,7 @@ export default function Dashboard() {
                 >
                   {idea.name}
                 </motion.h2>
-                <p className="text-gray-300 mb-1">{idea.pitch}</p>
+                <p className="text-gray-300 mb-1 line-clamp-3">{idea.pitch}</p>
                 <p className="text-sm text-gray-500">
                   Skapad: {new Date(idea.created_at).toLocaleString()}
                 </p>
@@ -131,15 +134,17 @@ export default function Dashboard() {
         >
           <a
             href="/#form"
-            className="bg-teal-500 hover:bg-teal-600 transition text-white px-6 py-3 rounded-xl font-semibold shadow"
+            className="bg-teal-500 hover:bg-teal-600 transition text-white px-6 py-3 rounded-xl font-semibold shadow relative overflow-hidden"
           >
-            ➕ Skapa nytt AI-paket
+            <span className="absolute inset-0 bg-white/10 rounded-xl blur-sm opacity-20 animate-pulse"></span>
+            <span className="relative">➕ Skapa nytt AI-paket</span>
           </a>
           <a
             href="/chat"
-            className="bg-indigo-500 hover:bg-indigo-600 transition text-white px-6 py-3 rounded-xl font-semibold shadow"
+            className="bg-indigo-500 hover:bg-indigo-600 transition text-white px-6 py-3 rounded-xl font-semibold shadow relative overflow-hidden"
           >
-            💬 Öppna AI-chatten
+            <span className="absolute inset-0 bg-white/10 rounded-xl blur-sm opacity-20 animate-pulse"></span>
+            <span className="relative">💬 Öppna AI-chatten</span>
           </a>
         </motion.div>
       </div>
