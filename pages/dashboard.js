@@ -50,26 +50,27 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0f172a] text-white py-12 px-6">
+    <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] text-white py-12 px-6">
       <div className="max-w-4xl mx-auto">
         <motion.h1
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-4xl font-bold mb-6"
+          className="text-4xl font-bold mb-6 text-center"
         >
           📊 Din AI-dashboard
         </motion.h1>
 
         {loading ? (
-          <motion.p
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ repeat: Infinity, duration: 1, ease: "easeInOut" }}
-            className="text-gray-400 animate-pulse"
+            className="flex justify-center items-center"
           >
-            🔄 Laddar dina AI-idéer...
-          </motion.p>
+            <div className="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+            <span className="ml-4 text-gray-400">🔄 Laddar dina AI-idéer...</span>
+          </motion.div>
         ) : ideas.length > 0 ? (
           <motion.ul
             initial="hidden"
@@ -93,7 +94,7 @@ export default function Dashboard() {
                 }}
                 whileHover={{ scale: 1.02 }}
                 transition={{ type: "spring", stiffness: 300 }}
-                className="bg-[#1e293b] p-6 rounded-xl shadow-md"
+                className="bg-gradient-to-r from-[#1e293b] to-[#0f172a] p-6 rounded-xl shadow-lg hover:shadow-xl"
               >
                 <motion.h2
                   initial={{ opacity: 0 }}
@@ -115,7 +116,7 @@ export default function Dashboard() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.4 }}
-            className="text-gray-400"
+            className="text-gray-400 text-center"
           >
             ❗ Du har ännu inga sparade AI-paket.
           </motion.p>
@@ -125,11 +126,11 @@ export default function Dashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="mt-8"
+          className="mt-10 flex justify-center"
         >
           <a
             href="/#form"
-            className="bg-teal-500 hover:bg-teal-600 transition text-white px-6 py-3 rounded-xl font-semibold"
+            className="bg-teal-500 hover:bg-teal-600 transition text-white px-6 py-3 rounded-xl font-semibold shadow"
           >
             ➕ Skapa nytt AI-paket
           </a>
