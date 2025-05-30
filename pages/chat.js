@@ -88,7 +88,7 @@ export default function ChatPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: i * 0.1 }}
-                className={`max-w-sm px-4 py-3 rounded-2xl ${msg.role === "user" ? "bg-teal-600" : "bg-gray-600"}`}
+                className={`max-w-sm px-4 py-3 rounded-2xl ${msg.role === "user" ? "bg-gradient-to-r from-teal-500 to-teal-600" : "bg-gradient-to-r from-gray-600 to-gray-700"}`}
               >
                 {msg.content}
               </motion.div>
