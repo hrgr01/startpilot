@@ -56,17 +56,17 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0f172a] text-white p-6">
+    <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] text-white p-6">
       <Head>
         <title>AI-Chatt – Startpilot</title>
       </Head>
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6 text-center">💬 AI-Chatt</h1>
+        <h1 className="text-3xl font-bold mb-6 text-center animate-fade-in">💬 AI-Chatt</h1>
 
-        <div className="bg-[#1e293b] rounded-xl p-6 h-[70vh] overflow-y-auto mb-6">
+        <div className="bg-[#1e293b] rounded-xl p-6 h-[70vh] overflow-y-auto mb-6 space-y-4 animate-fade-in">
           {messages.map((msg, i) => (
-            <div key={i} className={`mb-4 ${msg.role === "user" ? "text-right" : "text-left"}`}>
-              <div className={`inline-block px-4 py-2 rounded-xl ${msg.role === "user" ? "bg-teal-600" : "bg-gray-600"}`}>
+            <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+              <div className={`max-w-sm px-4 py-3 rounded-2xl ${msg.role === "user" ? "bg-teal-600" : "bg-gray-600"}`}>
                 {msg.content}
               </div>
             </div>
@@ -74,12 +74,12 @@ export default function ChatPage() {
           {loading && <p className="text-center text-gray-400 animate-pulse">AI svarar...</p>}
         </div>
 
-        <form onSubmit={handleSend} className="flex gap-2">
+        <form onSubmit={handleSend} className="flex gap-2 animate-fade-in">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            className="flex-1 p-4 rounded-xl bg-[#1e293b] border border-gray-600 focus:outline-none"
+            className="flex-1 p-4 rounded-xl bg-[#1e293b] border border-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-500"
             placeholder="Ställ en fråga till din AI-coach..."
           />
           <button
