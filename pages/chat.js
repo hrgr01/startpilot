@@ -7,7 +7,12 @@ import Head from "next/head";
 export default function ChatPage() {
   const [user, setUser] = useState(null);
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([
+    {
+      role: "assistant",
+      content: "Hej 👋 Vad vill du bygga idag? Beskriv din idé så hjälper jag dig direkt!"
+    }
+  ]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
