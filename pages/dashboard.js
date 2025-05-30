@@ -4,9 +4,10 @@ import { useRouter } from "next/router";
 import supabase from "../utils/supabase";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import { Lightbulb, Calendar, Sparkles, BrainCircuit } from "lucide-react";
 
 export default function Dashboard() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [user, setUser] = useState(null);
   const [ideas, setIdeas] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -56,6 +57,14 @@ export default function Dashboard() {
     setShowFull((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString(i18n.language || 'en', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] text-white py-12 px-6 relative">
       <div className="absolute inset-0 bg-gradient-to-br from-[#1e293b] via-transparent to-[#0f172a] blur-3xl opacity-30 z-0"></div>
@@ -64,25 +73,32 @@ export default function Dashboard() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-4xl font-bold mb-6 text-center"
+          className="text-4xl font-bold mb-2 text-center"
         >
           📊 {t('dashboard.title')}
         </motion.h1>
+        <p className="text-center text-gray-400 mb-8 text-sm max-w-xl mx-auto">
+          {t('dashboard.subtitle') || "Din samlingsplats för alla dina AI-genererade affärsidéer – snyggt samlade och lättöverskådliga."}
+        </p>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
-          <div className="bg-white/10 text-center p-4 rounded-xl">
+          <div className="bg-white/10 text-center p-4 rounded-xl flex flex-col items-center">
+            <Lightbulb className="w-5 h-5 text-yellow-400 mb-1" />
             <h3 className="text-sm text-gray-400">{t('dashboard.total')}</h3>
             <p className="text-2xl font-bold">{ideas.length}</p>
           </div>
-          <div className="bg-white/10 text-center p-4 rounded-xl">
+          <div className="bg-white/10 text-center p-4 rounded-xl flex flex-col items-center">
+            <Sparkles className="w-5 h-5 text-pink-400 mb-1" />
             <h3 className="text-sm text-gray-400">{t('dashboard.latest_idea')}</h3>
             <p className="text-md">{ideas[0]?.name || "-"}</p>
           </div>
-          <div className="bg-white/10 text-center p-4 rounded-xl">
+          <div className="bg-white/10 text-center p-4 rounded-xl flex flex-col items-center">
+            <Calendar className="w-5 h-5 text-blue-400 mb-1" />
             <h3 className="text-sm text-gray-400">{t('dashboard.latest_date')}</h3>
-            <p className="text-md">{ideas[0] ? new Date(ideas[0].created_at).toLocaleDateString() : "-"}</p>
+            <p className="text-md">{ideas[0] ? formatDate(ideas[0].created_at) : "-"}</p>
           </div>
-          <div className="bg-white/10 text-center p-4 rounded-xl">
+          <div className="bg-white/10 text-center p-4 rounded-xl flex flex-col items-center">
+            <BrainCircuit className="w-5 h-5 text-green-400 mb-1" />
             <h3 className="text-sm text-gray-400">{t('dashboard.ai_score')}</h3>
             <p className="text-xl text-green-400 font-semibold">86%</p>
           </div>
@@ -94,6 +110,8 @@ export default function Dashboard() {
             animate={{ opacity: 1 }}
             transition={{ repeat: Infinity, duration: 1, ease: "easeInOut" }}
             className="flex justify-center items-center"
+            role="status"
+            aria-live="polite"
           >
             <div className="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
             <span className="ml-4 text-gray-400">🔄 {t('dashboard.loading')}</span>
@@ -126,7 +144,7 @@ export default function Dashboard() {
                   {showFull[idea.id] ? idea.pitch : `${idea.pitch.slice(0, 140)}...`}
                 </p>
                 <p className="text-sm text-gray-500">
-                  {t('dashboard.created')}: {new Date(idea.created_at).toLocaleString()}
+                  {t('dashboard.created')}: {formatDate(idea.created_at)}
                 </p>
                 <button
                   className="mt-2 text-sm text-teal-400 hover:underline"
