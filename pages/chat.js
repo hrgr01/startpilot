@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import supabase from "../utils/supabase";
 import Head from "next/head";
+import { motion } from "framer-motion";
 
 export default function ChatPage() {
   const [user, setUser] = useState(null);
@@ -66,20 +67,43 @@ export default function ChatPage() {
         <title>AI-Chatt – Startpilot</title>
       </Head>
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6 text-center animate-fade-in">💬 AI-Chatt</h1>
+        <motion.h1
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-3xl font-bold mb-6 text-center"
+        >
+          💬 AI-Chatt
+        </motion.h1>
 
-        <div className="bg-[#1e293b] rounded-xl p-6 h-[70vh] overflow-y-auto mb-6 space-y-4 animate-fade-in">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="bg-[#1e293b] rounded-xl p-6 h-[70vh] overflow-y-auto mb-6 space-y-4"
+        >
           {messages.map((msg, i) => (
             <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-              <div className={`max-w-sm px-4 py-3 rounded-2xl ${msg.role === "user" ? "bg-teal-600" : "bg-gray-600"}`}>
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: i * 0.1 }}
+                className={`max-w-sm px-4 py-3 rounded-2xl ${msg.role === "user" ? "bg-teal-600" : "bg-gray-600"}`}
+              >
                 {msg.content}
-              </div>
+              </motion.div>
             </div>
           ))}
           {loading && <p className="text-center text-gray-400 animate-pulse">AI svarar...</p>}
-        </div>
+        </motion.div>
 
-        <form onSubmit={handleSend} className="flex gap-2 animate-fade-in">
+        <motion.form
+          onSubmit={handleSend}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="flex gap-2"
+        >
           <input
             type="text"
             value={input}
@@ -94,7 +118,7 @@ export default function ChatPage() {
           >
             Skicka
           </button>
-        </form>
+        </motion.form>
       </div>
     </div>
   );
