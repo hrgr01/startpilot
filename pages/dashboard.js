@@ -71,6 +71,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] text-white py-12 px-6 relative">
       <div className="absolute inset-0 bg-gradient-to-br from-[#1e293b] via-transparent to-[#0f172a] blur-3xl opacity-30 z-0"></div>
+      <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-purple-500/10 via-transparent to-pink-500/10 z-0"></div>
       <div className="backdrop-blur-lg bg-white/5 border border-white/10 rounded-xl shadow-xl z-10 relative max-w-5xl mx-auto p-8">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
