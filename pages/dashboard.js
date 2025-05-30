@@ -5,143 +5,95 @@ import supabase from "../utils/supabase";
 import { motion } from "framer-motion";
 
 export default function Dashboard() {
-  const [user, setUser] = useState(null);
-  const [ideas, setIdeas] = useState([]);
+  const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    const getUser = async () => {
+    const fetchData = async () => {
       const {
         data: { session },
         error
       } = await supabase.auth.getSession();
-
-      if (error) {
-        console.error("Error getting session:", error.message);
-        return;
-      }
 
       if (!session) {
         router.push("/login");
         return;
       }
 
-      setUser(session.user);
-      fetchIdeas(session.user.email);
+      const { data, error: fetchError } = await supabase
+        .from("user_data")
+        .select("*")
+        .eq("email", session.user.email)
+        .single();
+
+      if (fetchError || !data) {
+        console.error("Kunde inte hämta användardata", fetchError);
+        router.push("/form");
+        return;
+      }
+
+      setUserData(data);
+      setLoading(false);
     };
 
-    getUser();
+    fetchData();
   }, []);
 
-  const fetchIdeas = async (email) => {
-    const { data, error } = await supabase
-      .from("ai_ideas")
-      .select("id, name, pitch, created_at")
-      .eq("email", email)
-      .order("created_at", { ascending: false });
-
-    if (!error && data) {
-      setIdeas(data);
-    } else {
-      console.error("Error fetching ideas:", error?.message);
-    }
-    setLoading(false);
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black text-white">
+        <p>Laddar din dashboard...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] text-white py-12 px-6">
-      <div className="max-w-4xl mx-auto">
+    <main className="min-h-screen bg-black text-white px-6 py-16">
+      <div className="max-w-5xl mx-auto">
         <motion.h1
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-4xl font-bold mb-6 text-center"
+          className="text-4xl font-bold text-center mb-10"
         >
-          📊 Din AI-dashboard
+          🧠 Din personliga Startpilot Dashboard
         </motion.h1>
 
-        {loading ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ repeat: Infinity, duration: 1, ease: "easeInOut" }}
-            className="flex justify-center items-center"
-          >
-            <div className="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-            <span className="ml-4 text-gray-400">🔄 Laddar dina AI-idéer...</span>
-          </motion.div>
-        ) : ideas.length > 0 ? (
-          <motion.ul
-            initial="hidden"
-            animate="visible"
-            variants={{
-              hidden: { opacity: 0, y: 20 },
-              visible: {
-                opacity: 1,
-                y: 0,
-                transition: { staggerChildren: 0.1 }
-              }
-            }}
-            className="space-y-4"
-          >
-            {ideas.map((idea) => (
-              <motion.li
-                key={idea.id}
-                variants={{
-                  hidden: { opacity: 0, y: 10 },
-                  visible: { opacity: 1, y: 0 }
-                }}
-                whileHover={{ scale: 1.02 }}
-                transition={{ type: "spring", stiffness: 300 }}
-                className="bg-gradient-to-r from-[#1e293b] to-[#0f172a] p-6 rounded-xl shadow-lg hover:shadow-xl"
-              >
-                <motion.h2
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className="text-2xl font-semibold mb-2"
-                >
-                  {idea.name}
-                </motion.h2>
-                <p className="text-gray-300 mb-1">{idea.pitch}</p>
-                <p className="text-sm text-gray-500">
-                  Skapad: {new Date(idea.created_at).toLocaleString()}
-                </p>
-              </motion.li>
-            ))}
-          </motion.ul>
-        ) : (
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.4 }}
-            className="text-gray-400 text-center"
-          >
-            ❗ Du har ännu inga sparade AI-paket.
-          </motion.p>
-        )}
+        <div className="bg-white text-black p-6 rounded-xl mb-6">
+          <h2 className="text-2xl font-bold mb-2">Affärside</h2>
+          <p className="text-lg">{userData.idea}</p>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="mt-10 flex justify-center gap-4 flex-wrap"
-        >
-          <a
-            href="/#form"
-            className="bg-teal-500 hover:bg-teal-600 transition text-white px-6 py-3 rounded-xl font-semibold shadow"
-          >
-            ➕ Skapa nytt AI-paket
-          </a>
-          <a
-            href="/chat"
-            className="bg-indigo-500 hover:bg-indigo-600 transition text-white px-6 py-3 rounded-xl font-semibold shadow"
-          >
-            💬 Öppna AI-chatten
-          </a>
-        </motion.div>
+          <div className="mt-4 flex flex-col gap-3">
+            <a
+              href={userData.store_link}
+              target="_blank"
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-center"
+            >
+              🚀 Gå till din Shopify-butik
+            </a>
+            <a
+              href={userData.pitch_link}
+              target="_blank"
+              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-center"
+            >
+              🎯 Visa pitchdeck
+            </a>
+            <a
+              href={userData.video_link}
+              target="_blank"
+              className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 text-center"
+            >
+              🎥 Se AI-video
+            </a>
+          </div>
+        </div>
+
+        <div className="bg-white text-black p-6 rounded-xl">
+          <h3 className="text-xl font-bold mb-4">📬 E-postflöde</h3>
+          <p>Status: {userData.email_status || "Ej påbörjat"}</p>
+        </div>
       </div>
-    </div>
+    </main>
   );
 }
