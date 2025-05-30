@@ -11,7 +11,9 @@ import {
   BrainCircuit,
   User,
   LineChart,
-  Bot
+  Bot,
+  FileText,
+  Trophy
 } from "lucide-react";
 
 export default function Dashboard() {
@@ -80,39 +82,45 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] text-white py-12 px-6">
       <div className="max-w-5xl mx-auto">
-        <motion.h1
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           className="text-4xl font-bold mb-6 text-center"
         >
-          📊 {t('dashboard.title')}
-        </motion.h1>
+          🚀 {t('dashboard.title')}
+        </motion.div>
 
         {user && (
-          <div className="flex justify-end items-center mb-4">
-            <User className="w-5 h-5 mr-2 text-gray-300" />
-            <span className="text-gray-300 text-sm">{user.email}</span>
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center gap-2">
+              <User className="w-5 h-5 text-gray-300" />
+              <span className="text-gray-300 text-sm">{user.email}</span>
+            </div>
+            <div>
+              <select
+                value={i18n.language}
+                onChange={(e) => i18n.changeLanguage(e.target.value)}
+                className="bg-gray-700 text-white rounded p-2 text-sm"
+              >
+                <option value="en">English</option>
+                <option value="sv">Svenska</option>
+                <option value="de">Deutsch</option>
+                <option value="es">Español</option>
+                <option value="fr">Français</option>
+              </select>
+            </div>
           </div>
         )}
 
-        <div className="flex justify-center mb-6">
-          <select
-            value={i18n.language}
-            onChange={(e) => i18n.changeLanguage(e.target.value)}
-            className="bg-gray-700 text-white rounded p-2 text-sm"
-          >
-            <option value="en">English</option>
-            <option value="sv">Svenska</option>
-            <option value="de">Deutsch</option>
-            <option value="es">Español</option>
-            <option value="fr">Français</option>
-          </select>
-        </div>
-
-        <div className="mb-8 text-center text-gray-400">
-          <p>{t('dashboard.intro')}</p>
-        </div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="mb-10 bg-white/10 p-4 rounded-xl text-center text-gray-300"
+        >
+          ✨ {t('dashboard.intro') || "Här är dina idéer. Klicka för att läsa mer, skapa nytt eller chatta med AI."}
+        </motion.div>
 
         <div className="mb-10">
           <h2 className="text-sm text-gray-400 mb-1 flex items-center gap-2">
@@ -181,7 +189,10 @@ export default function Dashboard() {
             ➕ {t('dashboard.new_package')}
           </a>
           <a href="/chat" className="bg-indigo-500 hover:bg-indigo-600 px-6 py-3 rounded-xl font-semibold text-white">
-            💬 {t('dashboard.open_chat')}
+            🤖 {t('dashboard.open_chat')}
+          </a>
+          <a href="/download" className="bg-purple-500 hover:bg-purple-600 px-6 py-3 rounded-xl font-semibold text-white">
+            🧾 {t('dashboard.export_pdf') || "Exportera PDF"}
           </a>
         </div>
       </div>
