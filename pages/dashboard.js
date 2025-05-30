@@ -13,7 +13,10 @@ import {
   LineChart,
   Bot,
   Globe,
-  Wand2
+  Wand2,
+  Share2,
+  Settings,
+  LayoutDashboard
 } from "lucide-react";
 
 export default function Dashboard() {
@@ -143,22 +146,22 @@ export default function Dashboard() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
           <div className="bg-white/10 text-center p-4 rounded-xl flex flex-col items-center">
             <Lightbulb className="w-5 h-5 text-yellow-400 mb-1" />
-            <h3 className="text-sm text-gray-400">{t('dashboard.total')}</h3>
+            <h3 className="text-sm text-gray-400">Totalt</h3>
             <p className="text-2xl font-bold">{ideas.length}</p>
           </div>
           <div className="bg-white/10 text-center p-4 rounded-xl flex flex-col items-center">
             <Sparkles className="w-5 h-5 text-pink-400 mb-1" />
-            <h3 className="text-sm text-gray-400">{t('dashboard.latest_idea')}</h3>
+            <h3 className="text-sm text-gray-400">Senaste idé</h3>
             <p className="text-md">{ideas[0]?.name || "-"}</p>
           </div>
           <div className="bg-white/10 text-center p-4 rounded-xl flex flex-col items-center">
             <Calendar className="w-5 h-5 text-blue-400 mb-1" />
-            <h3 className="text-sm text-gray-400">{t('dashboard.latest_date')}</h3>
+            <h3 className="text-sm text-gray-400">Senast skapat</h3>
             <p className="text-md">{ideas[0] ? formatDate(ideas[0].created_at) : "-"}</p>
           </div>
           <div className="bg-white/10 text-center p-4 rounded-xl flex flex-col items-center">
             <BrainCircuit className="w-5 h-5 text-green-400 mb-1" />
-            <h3 className="text-sm text-gray-400">{t('dashboard.ai_score')}</h3>
+            <h3 className="text-sm text-gray-400">AI Score</h3>
             <p className="text-xl text-green-400 font-semibold">86%</p>
           </div>
         </div>
