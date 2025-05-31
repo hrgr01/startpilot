@@ -13,14 +13,20 @@ export default function LoginPage() {
     setLoading(true);
     const { error } = await supabase.auth.signInWithOtp({ email });
     setLoading(false);
-    if (!error) alert("Check your inbox for the login link!");
-    else alert("Login error: " + error.message);
+    if (!error) {
+      alert("✅ Kolla din inkorg för inloggningslänk!");
+    } else {
+      alert("❌ Inloggningsfel: " + error.message);
+    }
   };
 
   return (
     <div className="min-h-screen bg-[#0f172a] text-white flex flex-col items-center justify-center px-6 py-12">
       <h1 className="text-3xl font-bold mb-6">🔐 Logga in till din dashboard</h1>
-      <form onSubmit={handleLogin} className="max-w-md w-full bg-[#1e293b] p-8 rounded-xl shadow">
+      <form
+        onSubmit={handleLogin}
+        className="max-w-md w-full bg-[#1e293b] p-8 rounded-xl shadow"
+      >
         <label className="block mb-4">
           <span className="text-sm font-medium">Din e-post</span>
           <input
@@ -29,6 +35,7 @@ export default function LoginPage() {
             onChange={(e) => setEmail(e.target.value)}
             required
             className="mt-1 w-full p-4 rounded-lg bg-[#0f172a] border border-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-400"
+            placeholder="namn@epost.com"
           />
         </label>
         <button
