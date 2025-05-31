@@ -49,27 +49,32 @@ export default function Home() {
       </div>
 
       <div className="mt-20 max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 text-center z-10 relative">
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          className="bg-white/5 hover:bg-white/10 transition rounded-xl p-6 shadow-md"
-        >
-          <h3 className="text-xl font-bold mb-2">⚡ {t("home.step1") || "Skriv din idé"}</h3>
-          <p className="text-gray-400">{t("home.step1_desc") || "Berätta vad du vill skapa – med bara några ord."}</p>
-        </motion.div>
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          className="bg-white/5 hover:bg-white/10 transition rounded-xl p-6 shadow-md"
-        >
-          <h3 className="text-xl font-bold mb-2">🤖 {t("home.step2") || "AI bygger allt"}</h3>
-          <p className="text-gray-400">{t("home.step2_desc") || "Vi skapar varumärke, pitch, annonsvideo och butik."}</p>
-        </motion.div>
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          className="bg-white/5 hover:bg-white/10 transition rounded-xl p-6 shadow-md"
-        >
-          <h3 className="text-xl font-bold mb-2">🌍 {t("home.step3") || "Lansera direkt"}</h3>
-          <p className="text-gray-400">{t("home.step3_desc") || "Du får allt skickat till din mejl – redo att publicera."}</p>
-        </motion.div>
+        {[
+          {
+            icon: "⚡",
+            title: t("home.step1") || "Skriv din idé",
+            desc: t("home.step1_desc") || "Berätta vad du vill skapa – med bara några ord."
+          },
+          {
+            icon: "🤖",
+            title: t("home.step2") || "AI bygger allt",
+            desc: t("home.step2_desc") || "Vi skapar varumärke, pitch, annonsvideo och butik."
+          },
+          {
+            icon: "🌍",
+            title: t("home.step3") || "Lansera direkt",
+            desc: t("home.step3_desc") || "Du får allt skickat till din mejl – redo att publicera."
+          }
+        ].map((step, index) => (
+          <motion.div
+            key={index}
+            whileHover={{ scale: 1.05 }}
+            className="bg-white/5 hover:bg-white/10 transition rounded-xl p-6 shadow-md"
+          >
+            <h3 className="text-xl font-bold mb-2">{step.icon} {step.title}</h3>
+            <p className="text-gray-400">{step.desc}</p>
+          </motion.div>
+        ))}
       </div>
 
       <motion.div
