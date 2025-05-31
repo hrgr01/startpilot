@@ -59,6 +59,23 @@ export default function Home() {
           <p className="text-gray-400">{t("home.step3_desc") || "Du får allt skickat till din mejl – redo att publicera."}</p>
         </div>
       </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.9 }}
+        className="mt-24 max-w-3xl mx-auto text-center text-gray-400"
+      >
+        <h2 className="text-2xl font-semibold mb-4">🎬 {t("home.demo_title") || "Se hur det fungerar"}</h2>
+        <video
+          className="rounded-xl border border-white/10 mx-auto"
+          src="/demo.mp4"
+          controls
+          autoPlay
+          loop
+          muted
+        ></video>
+      </motion.div>
     </div>
   );
 }
