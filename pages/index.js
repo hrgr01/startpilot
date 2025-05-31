@@ -10,6 +10,7 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-b from-[#0f172a] to-[#1e293b] text-white px-6 py-16">
       <div className="absolute inset-0 bg-gradient-to-br from-[#1e293b] via-transparent to-[#0f172a] blur-3xl opacity-20 z-0"></div>
       <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-purple-500/10 via-transparent to-pink-500/10 z-0"></div>
+
       <div className="relative max-w-5xl mx-auto text-center z-10">
         <motion.h1
           initial={{ opacity: 0, y: -20 }}
@@ -48,18 +49,27 @@ export default function Home() {
       </div>
 
       <div className="mt-20 max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 text-center z-10 relative">
-        <div className="bg-white/5 hover:bg-white/10 transition rounded-xl p-6">
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          className="bg-white/5 hover:bg-white/10 transition rounded-xl p-6 shadow-md"
+        >
           <h3 className="text-xl font-bold mb-2">⚡ {t("home.step1") || "Skriv din idé"}</h3>
           <p className="text-gray-400">{t("home.step1_desc") || "Berätta vad du vill skapa – med bara några ord."}</p>
-        </div>
-        <div className="bg-white/5 hover:bg-white/10 transition rounded-xl p-6">
+        </motion.div>
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          className="bg-white/5 hover:bg-white/10 transition rounded-xl p-6 shadow-md"
+        >
           <h3 className="text-xl font-bold mb-2">🤖 {t("home.step2") || "AI bygger allt"}</h3>
           <p className="text-gray-400">{t("home.step2_desc") || "Vi skapar varumärke, pitch, annonsvideo och butik."}</p>
-        </div>
-        <div className="bg-white/5 hover:bg-white/10 transition rounded-xl p-6">
+        </motion.div>
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          className="bg-white/5 hover:bg-white/10 transition rounded-xl p-6 shadow-md"
+        >
           <h3 className="text-xl font-bold mb-2">🌍 {t("home.step3") || "Lansera direkt"}</h3>
           <p className="text-gray-400">{t("home.step3_desc") || "Du får allt skickat till din mejl – redo att publicera."}</p>
-        </div>
+        </motion.div>
       </div>
 
       <motion.div
