@@ -1,114 +1,64 @@
 // pages/index.js
-import Hero from "../components/Hero";
-import { useState } from "react";
-import Head from "next/head";
-import { useRouter } from "next/router";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 export default function Home() {
-  const [idea, setIdea] = useState("");
-  const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const router = useRouter();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    const res = await fetch("/api/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ idea, email }),
-    });
-    const data = await res.json();
-    setLoading(false);
-
-    if (data.success) {
-      setSuccess(true);
-      setTimeout(() => router.push("/dashboard"), 1500);
-    } else {
-      alert("Något gick fel. Försök igen.");
-    }
-  };
+  const { t } = useTranslation();
 
   return (
-    <>
-      <Hero />
-      <div className="bg-[#0f172a] min-h-screen text-white px-6 py-12">
-        <Head>
-          <title>Startpilot – Skapa din AI-affärside</title>
-        </Head>
-
-        <div className="text-center mb-16 animate-fade-in">
-          <h1 className="text-5xl font-bold mb-4">
-            🚀 Starta ditt nästa företag med AI
-          </h1>
-          <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-            Skriv in din idé så bygger Startpilot ett komplett affärspaket på några sekunder. Allt skickas till din mejl – 100 % gratis.
-          </p>
-        </div>
-
-        <form
-          onSubmit={handleSubmit}
-          className="bg-[#1e293b] max-w-xl mx-auto p-8 rounded-2xl shadow-lg animate-fade-in"
+    <div className="min-h-screen bg-gradient-to-b from-[#0f172a] to-[#1e293b] text-white px-6 py-16">
+      <div className="max-w-5xl mx-auto text-center">
+        <motion.h1
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-5xl font-bold mb-4"
         >
-          <label className="block mb-4">
-            <span className="text-sm font-medium">Din affärside</span>
-            <textarea
-              required
-              value={idea}
-              onChange={(e) => setIdea(e.target.value)}
-              className="w-full mt-1 p-4 bg-[#0f172a] border border-gray-600 rounded-lg focus:outline-none"
-              placeholder="T.ex. AI-tränare för stressade småbarnsföräldrar"
-              rows={5}
-            />
-          </label>
-          <label className="block mb-6">
-            <span className="text-sm font-medium">Din e-post</span>
-            <input
-              required
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full mt-1 p-4 bg-[#0f172a] border border-gray-600 rounded-lg focus:outline-none"
-              placeholder="du@email.com"
-            />
-          </label>
-          <button
-            disabled={loading}
-            className="w-full py-4 bg-teal-500 hover:bg-teal-600 text-white text-lg rounded-xl font-semibold flex items-center justify-center"
-          >
-            {loading ? (
-              <svg
-                className="animate-spin h-5 w-5 mr-3 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v8z"
-                ></path>
-              </svg>
-            ) : null}
-            {loading ? "Skickar..." : "Skapa AI-paket"}
-          </button>
-        </form>
+          {t("home.hero_title") || "Bygg ditt nästa företag på 24h med AI"}
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="text-gray-400 text-lg max-w-2xl mx-auto mb-8"
+        >
+          {t("home.hero_subtitle") || "Startpilot skapar din affärsidé, pitch, varumärke, butik, annonsvideo och e-post – automatiskt."}
+        </motion.p>
 
-        {success && (
-          <div className="text-center mt-10 text-green-400 text-xl animate-fade-in">
-            ✅ Ditt AI-paket genererades! Omdirigerar till din dashboard...
-          </div>
-        )}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+          className="flex justify-center gap-4 flex-wrap"
+        >
+          <Link href="#form">
+            <a className="bg-teal-500 hover:bg-teal-600 px-8 py-4 rounded-xl font-semibold shadow-lg">
+              🚀 {t("home.cta") || "Starta gratis"}
+            </a>
+          </Link>
+          <Link href="/dashboard">
+            <a className="border border-white/20 px-8 py-4 rounded-xl font-semibold text-white hover:bg-white/10">
+              📊 {t("home.view_dashboard") || "Se dina idéer"}
+            </a>
+          </Link>
+        </motion.div>
       </div>
-    </>
+
+      <div className="mt-20 max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+        <div className="bg-white/5 rounded-xl p-6">
+          <h3 className="text-xl font-bold mb-2">⚡ {t("home.step1") || "Skriv din idé"}</h3>
+          <p className="text-gray-400">{t("home.step1_desc") || "Berätta vad du vill skapa – med bara några ord."}</p>
+        </div>
+        <div className="bg-white/5 rounded-xl p-6">
+          <h3 className="text-xl font-bold mb-2">🤖 {t("home.step2") || "AI bygger allt"}</h3>
+          <p className="text-gray-400">{t("home.step2_desc") || "Vi skapar varumärke, pitch, annonsvideo och butik."}</p>
+        </div>
+        <div className="bg-white/5 rounded-xl p-6">
+          <h3 className="text-xl font-bold mb-2">🌍 {t("home.step3") || "Lansera direkt"}</h3>
+          <p className="text-gray-400">{t("home.step3_desc") || "Du får allt skickat till din mejl – redo att publicera."}</p>
+        </div>
+      </div>
+    </div>
   );
 }
