@@ -96,12 +96,14 @@ export default function Home() {
         className="mt-20 max-w-xl mx-auto text-center relative z-10"
       >
         <h3 className="text-xl font-bold text-white mb-2">💳 Redo att köpa?</h3>
-        <p className="text-gray-400 mb-4">När ditt AI-paket är klart får du tillgång till en färdig produkt som du kan köpa med Stripe.</p>
-        <Link href="/dashboard">
-          <a className="inline-block bg-pink-600 hover:bg-pink-700 px-6 py-3 rounded-lg font-semibold text-white shadow">
-            Gå till din AI-produkt
-          </a>
-        </Link>
+        <p className="text-gray-400 mb-4">Välj ditt AI-paket och gå vidare till säker betalning via Stripe:</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <a href="https://buy.stripe.com/5kA005eGdffZfXGeUU" className="bg-pink-600 hover:bg-pink-700 px-6 py-3 rounded-lg font-semibold text-white shadow block text-center">Starter</a>
+          <a href="https://buy.stripe.com/8wMbIN55D8RBdPy6op" className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold text-white shadow block text-center">Pro</a>
+          <a href="https://buy.stripe.com/14k6otgOl9VFbHqfZ0" className="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg font-semibold text-white shadow block text-center">Creator</a>
+          <a href="https://buy.stripe.com/5kAfZ38hPebVh1K3cf" className="bg-yellow-600 hover:bg-yellow-700 px-6 py-3 rounded-lg font-semibold text-white shadow block text-center">Enterprise</a>
+          <a href="https://buy.stripe.com/9AQ5kp2XvebV12MaEI" className="bg-gray-600 hover:bg-gray-700 px-6 py-3 rounded-lg font-semibold text-white shadow block text-center">Custom</a>
+        </div>
       </motion.div>
     </div>
   );
