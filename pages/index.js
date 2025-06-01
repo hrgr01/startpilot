@@ -7,26 +7,26 @@ export default function Home() {
   const { t } = useTranslation();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0f172a] to-[#1e293b] text-white px-6 py-16">
-      <div className="absolute inset-0 bg-gradient-to-br from-[#1e293b] via-transparent to-[#0f172a] blur-3xl opacity-20 z-0"></div>
+    <div className="min-h-screen bg-gradient-to-b from-[#0f172a] to-[#1e293b] text-white px-6 py-16 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-[#1e293b] via-transparent to-[#0f172a] blur-3xl opacity-30 z-0"></div>
       <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-purple-500/10 via-transparent to-pink-500/10 z-0"></div>
 
-      <div className="relative max-w-5xl mx-auto text-center z-10">
+      <div className="relative max-w-5xl mx-auto text-center z-10 animate-fade-in-up">
         <motion.h1
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-5xl font-bold mb-4"
+          transition={{ duration: 0.7 }}
+          className="text-5xl md:text-6xl font-extrabold mb-6"
         >
-          {t("home.hero_title") || "Bygg ditt nästa företag på 24h med AI"}
+          🚀 Starta ditt AI-företag på 24h
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="text-gray-400 text-lg max-w-2xl mx-auto mb-8"
+          transition={{ delay: 0.4 }}
+          className="text-gray-300 text-lg max-w-2xl mx-auto mb-10"
         >
-          {t("home.hero_subtitle") || "Startpilot skapar din affärsidé, pitch, varumärke, butik, annonsvideo och e-post – automatiskt."}
+          Startpilot genererar hela ditt företag: affärsidé, varumärke, hemsida, butik, pitchdeck, annonser och video automatiskt – allt på några sekunder.
         </motion.p>
 
         <motion.div
@@ -36,46 +36,49 @@ export default function Home() {
           className="flex justify-center gap-4 flex-wrap"
         >
           <Link href="#form">
-            <a className="bg-teal-500 hover:bg-teal-600 px-8 py-4 rounded-xl font-semibold shadow-lg">
-              🚀 {t("home.cta") || "Starta gratis"}
+            <a className="bg-teal-500 hover:bg-teal-600 px-8 py-4 rounded-xl font-semibold shadow-lg transition-all">
+              🚀 Starta gratis
             </a>
           </Link>
           <Link href="/dashboard">
-            <a className="border border-white/20 px-8 py-4 rounded-xl font-semibold text-white hover:bg-white/10">
-              📊 {t("home.view_dashboard") || "Se dina idéer"}
+            <a className="border border-white/20 px-8 py-4 rounded-xl font-semibold text-white hover:bg-white/10 transition-all">
+              📊 Se dina idéer
             </a>
           </Link>
         </motion.div>
       </div>
 
-      <div className="mt-20 max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 text-center z-10 relative">
-        {["step1", "step2", "step3"].map((key, index) => {
-          const steps = [
-            { icon: "⚡", title: t("home.step1"), desc: t("home.step1_desc") },
-            { icon: "🤖", title: t("home.step2"), desc: t("home.step2_desc") },
-            { icon: "🌍", title: t("home.step3"), desc: t("home.step3_desc") }
-          ];
-          const step = steps[index];
-          return (
-            <motion.div
-              key={index}
-              whileHover={{ scale: 1.05 }}
-              className="bg-white/5 hover:bg-white/10 transition rounded-xl p-6 shadow-md"
-            >
-              <h3 className="text-xl font-bold mb-2">{step.icon} {step.title}</h3>
-              <p className="text-gray-400">{step.desc}</p>
-            </motion.div>
-          );
-        })}
+      <div className="mt-24 max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 text-center relative z-10 animate-fade-in-up">
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          className="bg-white/5 hover:bg-white/10 transition rounded-xl p-6 shadow-md"
+        >
+          <h3 className="text-xl font-bold mb-2">⚡ Steg 1</h3>
+          <p className="text-gray-400">Skriv in din affärsidé</p>
+        </motion.div>
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          className="bg-white/5 hover:bg-white/10 transition rounded-xl p-6 shadow-md"
+        >
+          <h3 className="text-xl font-bold mb-2">🤖 Steg 2</h3>
+          <p className="text-gray-400">AI genererar hela företaget åt dig</p>
+        </motion.div>
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          className="bg-white/5 hover:bg-white/10 transition rounded-xl p-6 shadow-md"
+        >
+          <h3 className="text-xl font-bold mb-2">🌍 Steg 3</h3>
+          <p className="text-gray-400">Du får en färdig butik, pitch, video & e-post</p>
+        </motion.div>
       </div>
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.9 }}
-        className="mt-24 max-w-3xl mx-auto text-center text-gray-400 z-10 relative"
+        transition={{ delay: 1 }}
+        className="mt-28 max-w-3xl mx-auto text-center text-gray-400 relative z-10"
       >
-        <h2 className="text-2xl font-semibold mb-4">🎬 {t("home.demo_title") || "Se hur det fungerar"}</h2>
+        <h2 className="text-2xl font-semibold mb-4">🎬 Se det i action</h2>
         <video
           className="rounded-xl border border-white/10 mx-auto shadow-xl"
           src="/demo.mp4"
@@ -84,6 +87,21 @@ export default function Home() {
           loop
           muted
         ></video>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.2 }}
+        className="mt-20 max-w-xl mx-auto text-center relative z-10"
+      >
+        <h3 className="text-xl font-bold text-white mb-2">💳 Redo att köpa?</h3>
+        <p className="text-gray-400 mb-4">När ditt AI-paket är klart får du tillgång till en färdig produkt som du kan köpa med Stripe.</p>
+        <Link href="/dashboard">
+          <a className="inline-block bg-pink-600 hover:bg-pink-700 px-6 py-3 rounded-lg font-semibold text-white shadow">
+            Gå till din AI-produkt
+          </a>
+        </Link>
       </motion.div>
     </div>
   );
