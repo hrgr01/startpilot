@@ -1,19 +1,13 @@
 // pages/index.js
 import Link from "next/link";
 import { motion } from "framer-motion";
-import dynamic from "next/dynamic";
-
-const Globe = dynamic(() => import("../components/Globe"), { ssr: false });
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-black text-white px-6 py-16 relative overflow-hidden font-sans">
-      {/* Bakgrundsanimation + jordglob */}
+      {/* Bakgrundsanimation */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-800 blur-2xl opacity-30 z-0"></div>
       <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-gray-700/20 via-transparent to-gray-700/20 z-0"></div>
-      <div className="absolute right-0 top-0 w-full h-[600px] z-0 opacity-20 pointer-events-none">
-        <Globe />
-      </div>
 
       {/* Hero */}
       <div className="relative max-w-6xl mx-auto text-center z-10">
@@ -40,11 +34,12 @@ export default function Home() {
           transition={{ delay: 0.6 }}
           className="flex justify-center gap-6 flex-wrap"
         >
-          <Link href="#form">
-            <a className="bg-white text-black px-8 py-4 rounded-full font-semibold shadow-xl hover:scale-110 hover:shadow-white/80 transition transform duration-300">
-              🚀 Testa gratis
-            </a>
-          </Link>
+          <a
+            href="#pricing"
+            className="bg-white text-black px-8 py-4 rounded-full font-semibold shadow-xl hover:scale-110 hover:shadow-white/80 transition transform duration-300"
+          >
+            🚀 Testa gratis
+          </a>
         </motion.div>
       </div>
 
@@ -86,6 +81,7 @@ export default function Home() {
 
       {/* Stripe-paket */}
       <motion.div
+        id="pricing"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.2 }}
