@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { supabase } from "../lib/supabase";
+import { supabase } from "../utils/supabase";
 
 export default function AdminPanel() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
